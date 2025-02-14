@@ -1,10 +1,11 @@
-package io.github.inf1009;
+package io.github.inf1009.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
+import io.github.inf1009.Tetris;
+
 
 public class MainMenuScreen implements Screen {
 
