@@ -1,4 +1,12 @@
 package io.github.inf1009.manager;
 
-public class InputManager {
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+
+public class InputManager extends InputAdapter {
+
+    public void update() {
+
+    }
 }

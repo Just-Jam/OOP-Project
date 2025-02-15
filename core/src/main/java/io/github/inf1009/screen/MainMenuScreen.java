@@ -19,8 +19,8 @@ public class MainMenuScreen implements Screen {
     public void render(float delta) {
         ScreenUtils.clear(Color.BLACK);
 
-        game.viewport.apply();
-        game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
+        game.fitViewport.apply();
+        game.batch.setProjectionMatrix(game.fitViewport.getCamera().combined);
 
         game.batch.begin();
         //draw text. Remember that x and y are in meters
@@ -41,7 +41,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        game.viewport.update(width, height, true);
+        game.fitViewport.update(width, height, true);
     }
 
     @Override
