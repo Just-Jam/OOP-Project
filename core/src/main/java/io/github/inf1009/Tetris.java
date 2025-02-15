@@ -20,9 +20,9 @@ public class Tetris extends Game {
     public Stage leftStage;
     public Stage rightStage;
 
-    public final int gridWidth = 16;
-    public final int gridHeight = 20;
-
+    //sets the game board size by number
+    public final int gridColumns = 16;
+    public final int gridRows = 20;
 
 
     public void create() {
@@ -36,7 +36,7 @@ public class Tetris extends Game {
         rightViewport = new ScreenViewport();
         rightStage = new Stage(rightViewport);
 
-        fitViewport = new FitViewport(gridWidth, gridHeight);
+        fitViewport = new FitViewport(gridColumns, gridRows);
 
         //font has 15pt, but we need to scale it to our viewport by ratio of viewport height to screen height
         font.setUseIntegerPositions(false);

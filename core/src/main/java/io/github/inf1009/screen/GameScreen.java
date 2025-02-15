@@ -6,11 +6,13 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import io.github.inf1009.PlayerObject;
 import io.github.inf1009.Tetris;
 
 
@@ -18,35 +20,29 @@ import io.github.inf1009.Tetris;
 public class GameScreen implements Screen {
     final Tetris game;
     private ShapeRenderer shapeRenderer;
+    private SpriteBatch batch;
 
     Texture backgroundTexture;
-    Texture bucketTexture;
-    Sprite bucketSprite;
+
+    PlayerObject bucket;
+
     Vector2 touchPos;
-    Rectangle bucketRectangle;
-
-
-    private int gridSize;
-    private int gridWidth;
-    private int gridHeight;
+    float worldWidth;
+    float worldHeight;
 
     public GameScreen(final Tetris game) {
         this.game = game;
         shapeRenderer = new ShapeRenderer();
+        touchPos = new Vector2();
+        batch = game.batch;
+
+        worldWidth = game.fitViewport.getWorldWidth();
+        worldHeight = game.fitViewport.getWorldHeight();
 
         // load the images for the background, bucket and droplet
         backgroundTexture = new Texture("background.png");
-        bucketTexture = new Texture("bucket.png");
 
-        touchPos = new Vector2();
-
-        bucketSprite = new Sprite(bucketTexture);
-        bucketSprite.setSize(2, 2);
-        bucketRectangle = new Rectangle();
-
-        gridHeight = (int) game.fitViewport.getWorldHeight();
-        gridWidth = (int) game.fitViewport.getWorldWidth();
-        gridSize = 50;
+        bucket = new PlayerObject("bucket.png", 1, 1, 10, 10, (int) worldWidth);
 
     }
 
@@ -58,29 +54,11 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         input();
-        logic();
         draw();
     }
 
     private void input() {
-        float speed = 100f;
-        float delta = Gdx.graphics.getDeltaTime();
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            bucketSprite.translateX(speed * delta); // move the bucket right
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            bucketSprite.translateX(-speed * delta); // move the bucket left
-        }
-    }
-
-    private void logic() {
-        float worldWidth = game.fitViewport.getWorldWidth();
-        float bucketWidth = bucketSprite.getWidth();
-        float bucketHeight = bucketSprite.getHeight();
-        float delta = Gdx.graphics.getDeltaTime();
-
-        bucketSprite.setX(MathUtils.clamp(bucketSprite.getX(), 0, worldWidth - bucketWidth));
-        bucketRectangle.set(bucketSprite.getX(), bucketSprite.getY(), bucketWidth, bucketHeight);
+        bucket.input();
     }
 
     private void draw() {
@@ -97,19 +75,19 @@ public class GameScreen implements Screen {
 
         game.fitViewport.apply();
 
+        batch.setProjectionMatrix(game.fitViewport.getCamera().combined);
+        batch.begin();
 
-        game.batch.setProjectionMatrix(game.fitViewport.getCamera().combined);
-        game.batch.begin();
+        batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
+        bucket.draw(batch, worldWidth);
 
-        float worldWidth = game.fitViewport.getWorldWidth();
-        float worldHeight = game.fitViewport.getWorldHeight();
+        batch.end();
 
+        drawGrid();
 
-        game.batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
-        bucketSprite.draw(game.batch);
-        game.batch.end();
+    }
 
-
+    public void drawGrid() {
         //draw grid
         shapeRenderer.setProjectionMatrix(game.fitViewport.getCamera().combined);
         // Begin drawing
@@ -126,8 +104,6 @@ public class GameScreen implements Screen {
         }
         // End drawing
         shapeRenderer.end();
-
-
     }
 
     @Override
@@ -154,7 +130,8 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         backgroundTexture.dispose();
-        bucketTexture.dispose();
+        bucket.dispose();
+        shapeRenderer.dispose();
     }
 }
 
