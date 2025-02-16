@@ -11,8 +11,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.inf1009.PlayerObject;
+import io.github.inf1009.FallingBlock;
 import io.github.inf1009.Tetris;
 
 
@@ -21,6 +23,8 @@ public class GameScreen implements Screen {
     final Tetris game;
     private ShapeRenderer shapeRenderer;
     private SpriteBatch batch;
+    private Array<FallingBlock> fallingBlocks; // List of falling blocks
+    private float spawnTimer; // Timer for spawning new blocks
 
     Texture backgroundTexture;
 
@@ -42,7 +46,9 @@ public class GameScreen implements Screen {
         // load the images for the background, bucket and droplet
         backgroundTexture = new Texture("background.png");
 
-        bucket = new PlayerObject("bucket.png", 1, 1, 10, 10, (int) worldWidth);
+        bucket = new PlayerObject("bucket.png", 1, 1, 10, 10, (int) worldWidth, (int) worldHeight);
+        fallingBlocks = new Array<>();
+        spawnTimer = 0;
 
     }
 
@@ -53,6 +59,15 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+    	spawnTimer += delta;
+
+        // Spawn a new block every 1 second
+        if (spawnTimer > 1) {
+            spawnTimer = 0;
+            spawnFallingBlock();
+        }
+
+        updateFallingBlocks(delta);
         input();
         draw();
     }
@@ -82,9 +97,32 @@ public class GameScreen implements Screen {
         bucket.draw(batch, worldWidth);
 
         batch.end();
+     // Draw falling blocks
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.RED);
+        for (FallingBlock block : fallingBlocks) {
+            block.draw(shapeRenderer);
+        }
+        shapeRenderer.end();
 
         drawGrid();
 
+    }
+    private void spawnFallingBlock() {
+        float blockX = MathUtils.random(0, worldWidth - 1);
+        FallingBlock block = new FallingBlock(blockX, worldHeight, 1, 1);
+        fallingBlocks.add(block);
+    }
+
+    private void updateFallingBlocks(float delta) {
+        for (int i = fallingBlocks.size - 1; i >= 0; i--) {
+            FallingBlock block = fallingBlocks.get(i);
+            block.update(delta);
+
+            if (block.isOutOfBounds(worldHeight)) {
+                fallingBlocks.removeIndex(i); // Remove block if it falls below the screen
+            }
+        }
     }
 
     public void drawGrid() {
