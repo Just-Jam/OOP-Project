@@ -13,9 +13,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import io.github.inf1009.PlayerObject;
-import io.github.inf1009.FallingBlock;
-import io.github.inf1009.Tetris;
+import io.github.inf1009.*;
 
 
 //core game logic goes here
@@ -25,14 +23,19 @@ public class GameScreen implements Screen {
     private SpriteBatch batch;
     private Array<FallingBlock> fallingBlocks; // List of falling blocks
     private float spawnTimer; // Timer for spawning new blocks
+    private Grid grid;
 
     Texture backgroundTexture;
 
     PlayerObject bucket;
+    Block square;
 
     Vector2 touchPos;
-    float worldWidth;
-    float worldHeight;
+    int worldWidth;
+    int worldHeight;
+
+    private float gameSpeed = 1f;
+    private float timer = 0;
 
     public GameScreen(final Tetris game) {
         this.game = game;
@@ -40,8 +43,8 @@ public class GameScreen implements Screen {
         touchPos = new Vector2();
         batch = game.batch;
 
-        worldWidth = game.fitViewport.getWorldWidth();
-        worldHeight = game.fitViewport.getWorldHeight();
+        worldWidth = (int) game.fitViewport.getWorldWidth();
+        worldHeight = (int) game.fitViewport.getWorldHeight();
 
         // load the images for the background, bucket and droplet
         backgroundTexture = new Texture("background.png");
@@ -49,6 +52,9 @@ public class GameScreen implements Screen {
         bucket = new PlayerObject("bucket.png", 1, 1, 10, 10, (int) worldWidth, (int) worldHeight);
         fallingBlocks = new Array<>();
         spawnTimer = 0;
+
+        grid = new Grid(worldWidth, worldHeight);
+        square = new Block(10, worldHeight -1, worldWidth, worldHeight);
 
     }
 
@@ -60,6 +66,7 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
     	spawnTimer += delta;
+        timer += delta;
 
         // Spawn a new block every 1 second
         if (spawnTimer > 1) {
@@ -70,10 +77,17 @@ public class GameScreen implements Screen {
         updateFallingBlocks(delta);
         input();
         draw();
+
+        if (timer >= gameSpeed) {
+            square.update();
+            timer = 0;
+        }
+
     }
 
     private void input() {
         bucket.input();
+        square.input();
     }
 
     private void draw() {
@@ -105,7 +119,8 @@ public class GameScreen implements Screen {
         }
         shapeRenderer.end();
 
-        drawGrid();
+        grid.drawGrid(shapeRenderer, game.fitViewport);
+        square.draw(shapeRenderer);
 
     }
     private void spawnFallingBlock() {
@@ -123,25 +138,6 @@ public class GameScreen implements Screen {
                 fallingBlocks.removeIndex(i); // Remove block if it falls below the screen
             }
         }
-    }
-
-    public void drawGrid() {
-        //draw grid
-        shapeRenderer.setProjectionMatrix(game.fitViewport.getCamera().combined);
-        // Begin drawing
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        // Set the color for the grid lines
-        shapeRenderer.setColor(1, 1, 1, 1); // White color
-        // Draw vertical lines
-        for (int x = 0; x <= game.gridColumns; x++) {
-            shapeRenderer.rect(x - 0.02f, 0, 0.04f, game.gridRows); // Thin rectangle for vertical line
-        }
-        // Draw horizontal lines as rectangles
-        for (int y = 0; y <= game.gridRows; y++) {
-            shapeRenderer.rect(0, y - 0.02f, game.gridColumns, 0.04f); // Thin rectangle for horizontal line
-        }
-        // End drawing
-        shapeRenderer.end();
     }
 
     @Override
