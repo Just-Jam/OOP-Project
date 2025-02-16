@@ -21,8 +21,8 @@ public class Tetris extends Game {
     public Stage rightStage;
 
     //sets the game board size by number
-    public final int gridColumns = 16;
-    public final int gridRows = 20;
+    public final int gridColumns = 11;
+    public final int gridRows = 24;
 
 
     public void create() {

@@ -133,12 +133,12 @@ public class GameScreen implements Screen {
         // Set the color for the grid lines
         shapeRenderer.setColor(1, 1, 1, 1); // White color
         // Draw vertical lines
-        for (int x = 0; x <= worldWidth; x++) {
-            shapeRenderer.rect(x - 0.02f, 0, 0.04f, 20); // Thin rectangle for vertical line
+        for (int x = 0; x <= game.gridColumns; x++) {
+            shapeRenderer.rect(x - 0.02f, 0, 0.04f, game.gridRows); // Thin rectangle for vertical line
         }
         // Draw horizontal lines as rectangles
-        for (int y = 0; y <= worldHeight; y++) {
-            shapeRenderer.rect(0, y - 0.02f, 32, 0.04f); // Thin rectangle for horizontal line
+        for (int y = 0; y <= game.gridRows; y++) {
+            shapeRenderer.rect(0, y - 0.02f, game.gridColumns, 0.04f); // Thin rectangle for horizontal line
         }
         // End drawing
         shapeRenderer.end();
