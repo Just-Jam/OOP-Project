@@ -77,6 +77,8 @@ public class PlayerObject {
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) && gridY > 0) {
             gridY -= 1;
         }
+
+        rectangle.setPosition(gridX, gridY);
     }
 
 
