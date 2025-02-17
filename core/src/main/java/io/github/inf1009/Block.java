@@ -20,6 +20,18 @@ public class Block {
 
     }
 
+    public int getGridX() {
+        return gridX;
+    }
+
+    public int getGridY() {
+        return gridY;
+    }
+
+    public void setGridY(int y) {
+        gridY = y;
+    }
+
     public void draw(ShapeRenderer shapeRenderer) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.BLUE);
@@ -51,9 +63,22 @@ public class Block {
             gridY -= 1;
         }
 
-        if (gridY <= 0) {
-            gridY = worldHeight - 1;
-        }
+//        if (gridY <= 0) {
+//            gridY = worldHeight - 1;
+//        }
         bounds.setPosition(gridX, gridY);
     }
+
+    public boolean collidesWithBottomOrBlocks(boolean[][] gridMatrix) {
+
+        if (getGridY() == 0) {
+            return true;
+        }
+        if (gridMatrix[getGridX()][getGridY() - 1] || gridMatrix[getGridX()][getGridY()]) {
+            return true;
+        }
+        return false;
+    }
+
+
 }

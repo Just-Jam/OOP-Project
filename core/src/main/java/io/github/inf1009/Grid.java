@@ -1,8 +1,8 @@
 package io.github.inf1009;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class Grid {
     private final int columns;
@@ -14,14 +14,24 @@ public class Grid {
         this.columns = columns;
         this.rows = rows;
 
-        gridMatrix = new boolean[rows][columns];
+        gridMatrix = new boolean[columns][rows];
+
     }
 
     public boolean[][] getGridMatrix() {
         return gridMatrix;
     }
 
-    public void drawGrid(ShapeRenderer shapeRenderer, FitViewport fitViewport) {
+    public void setGrid(int x, int y) {
+        gridMatrix[x][y] = true;
+    }
+
+    public void draw(ShapeRenderer shapeRenderer, FitViewport fitViewport) {
+        drawGrid(shapeRenderer, fitViewport);
+        drawBlocks(shapeRenderer);
+    }
+
+    private void drawGrid(ShapeRenderer shapeRenderer, FitViewport fitViewport) {
         //draw grid
         shapeRenderer.setProjectionMatrix(fitViewport.getCamera().combined);
         // Begin drawing
@@ -38,5 +48,18 @@ public class Grid {
         }
         // End drawing
         shapeRenderer.end();
+    }
+
+    private void drawBlocks(ShapeRenderer shapeRenderer) {
+        for (int col = 0; col < columns; col++) {
+            for (int row = 0; row < rows; row++) {
+                if (gridMatrix[col][row]) {
+                    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                    shapeRenderer.setColor(Color.YELLOW);
+                    shapeRenderer.rect(col, row, 1, 1);
+                    shapeRenderer.end();
+                }
+            }
+        }
     }
 }

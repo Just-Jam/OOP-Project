@@ -78,6 +78,11 @@ public class GameScreen implements Screen {
         input();
         draw();
 
+        if (square.collidesWithBottomOrBlocks(grid.getGridMatrix())) {
+            grid.setGrid(square.getGridX(), square.getGridY());
+            square.setGridY(worldHeight -1);
+        }
+
         if (timer >= gameSpeed) {
             square.update();
             timer = 0;
@@ -119,8 +124,9 @@ public class GameScreen implements Screen {
         }
         shapeRenderer.end();
 
-        grid.drawGrid(shapeRenderer, game.fitViewport);
+        grid.draw(shapeRenderer, game.fitViewport);
         square.draw(shapeRenderer);
+
 
     }
     private void spawnFallingBlock() {
