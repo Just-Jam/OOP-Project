@@ -5,14 +5,16 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.inf1009.Tetris;
-
+import io.github.inf1009.manager.SceneManager;
 
 public class MainMenuScreen implements Screen {
 
-    final Tetris game;
+    private final Tetris game;
+    private final SceneManager sceneManager;
 
     public MainMenuScreen(final Tetris game) {
         this.game = game;
+        this.sceneManager = game.sceneManager; // Use SceneManager from Tetris
     }
 
     @Override
@@ -23,20 +25,19 @@ public class MainMenuScreen implements Screen {
         game.batch.setProjectionMatrix(game.fitViewport.getCamera().combined);
 
         game.batch.begin();
-        //draw text. Remember that x and y are in meters
+        // Draw text (x and y are in meters)
         game.font.draw(game.batch, "Welcome to Tetris!!! ", 1, 1.5f);
         game.font.draw(game.batch, "Tap anywhere to begin!", 1, 1);
         game.batch.end();
 
+        // Change screen using SceneManager when tapped
         if (Gdx.input.isTouched()) {
-            game.setScreen(new GameScreen(game));
-            dispose();
+            sceneManager.setScreen(new GameScreen(game));
         }
     }
 
     @Override
     public void show() {
-
     }
 
     @Override
@@ -46,24 +47,17 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
-
     }
-
 }
-
-
