@@ -28,7 +28,7 @@ public class PlayerObject {
         this.sprite = new Sprite(texture);
         sprite.setSize(width, height);
 
-        rectangle = new Rectangle();
+        rectangle = new Rectangle(gridX, gridY, width, height);
     }
 
     public int getGridX() {
