@@ -22,7 +22,7 @@ public class Grid {
         return gridMatrix;
     }
 
-    public void setGrid(int x, int y) {
+    public void addBlock(int x, int y) {
         gridMatrix[x][y] = true;
     }
 

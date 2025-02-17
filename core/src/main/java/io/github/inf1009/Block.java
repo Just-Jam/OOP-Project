@@ -39,27 +39,24 @@ public class Block {
         shapeRenderer.end();
     }
 
-    public void update() {
+    public void fall(Grid grid) {
         gridY -= 1;
-        bounds.setPosition(gridX, gridY);
 
-        if (gridY <= 0) {
-            gridY = worldHeight - 1;
-        }
+        bounds.setPosition(gridX, gridY);
     }
 
-    public void input() {
+    public void input(boolean[][] gridMatrix) {
         // Right movement
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) && gridX < worldWidth - 1) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) && !rightCollision(gridMatrix)) {
             gridX += 1;
         }
 
         // Left movement
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) && gridX > 0) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) && !leftCollision(gridMatrix)) {
             gridX -= 1;
         }
         // Down movement
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) && gridY > 0) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) && !bottomCollision(gridMatrix)) {
             gridY -= 1;
         }
 
@@ -69,12 +66,32 @@ public class Block {
         bounds.setPosition(gridX, gridY);
     }
 
-    public boolean collidesWithBottomOrBlocks(boolean[][] gridMatrix) {
+    public boolean bottomCollision(boolean[][] gridMatrix) {
 
         if (getGridY() == 0) {
             return true;
         }
-        if (gridMatrix[getGridX()][getGridY() - 1] || gridMatrix[getGridX()][getGridY()]) {
+        else if (gridMatrix[getGridX()][getGridY() - 1]) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean rightCollision(boolean[][] gridMatrix) {
+        if (gridX == worldWidth - 1) {
+            return true;
+        }
+        if (gridMatrix[gridX + 1][gridY]) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean leftCollision(boolean[][] gridMatrix) {
+        if (gridX == 0) {
+            return true;
+        }
+        if (gridMatrix[gridX - 1][gridY]) {
             return true;
         }
         return false;

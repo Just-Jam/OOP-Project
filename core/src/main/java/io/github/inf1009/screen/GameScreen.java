@@ -49,7 +49,7 @@ public class GameScreen implements Screen {
         // load the images for the background, bucket and squares
         backgroundTexture = new Texture("background.png");
 
-        bucket = new PlayerObject("bucket.png", 1, 1, 10, 10, (int) worldWidth, (int) worldHeight);
+//        bucket = new PlayerObject("bucket.png", 1, 1, 10, 10, (int) worldWidth, (int) worldHeight);
         fallingBlocks = new Array<>();
         spawnTimer = 0;
 
@@ -76,23 +76,26 @@ public class GameScreen implements Screen {
 
         updateFallingBlocks(delta);
         input();
+        logic();
         draw();
-
-        if (square.collidesWithBottomOrBlocks(grid.getGridMatrix())) {
-            grid.setGrid(square.getGridX(), square.getGridY());
-            square.setGridY(worldHeight -1);
-        }
-
-        if (timer >= gameSpeed) {
-            square.update();
-            timer = 0;
-        }
 
     }
 
     private void input() {
-        bucket.input();
-        square.input();
+//        bucket.input();
+        square.input(grid.getGridMatrix());
+    }
+
+    public void logic() {
+        if (timer >= gameSpeed) {
+            square.fall(grid);
+            timer = 0;
+        }
+
+        if (square.bottomCollision(grid.getGridMatrix())) {
+            grid.addBlock(square.getGridX(), square.getGridY());
+            square.setGridY(worldHeight -1);
+        }
     }
 
     private void draw() {
@@ -113,9 +116,10 @@ public class GameScreen implements Screen {
         batch.begin();
 
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
-        bucket.draw(batch, worldWidth);
+//        bucket.draw(batch, worldWidth);
 
         batch.end();
+
      // Draw falling blocks
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.RED);
@@ -144,7 +148,7 @@ public class GameScreen implements Screen {
                 fallingBlocks.removeIndex(i); // Remove block if it falls below the screen
             }
         }
-        CollisionManager.checkCollisions(bucket, fallingBlocks);
+//        CollisionManager.checkCollisions(bucket, fallingBlocks);
     }
 
     @Override
@@ -171,7 +175,7 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         backgroundTexture.dispose();
-        bucket.dispose();
+//        bucket.dispose();
         shapeRenderer.dispose();
     }
 }
