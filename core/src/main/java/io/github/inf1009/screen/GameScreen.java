@@ -20,13 +20,11 @@ public class GameScreen implements Screen {
     private SceneManager sceneManager;
     private ShapeRenderer shapeRenderer;
     private SpriteBatch batch;
-    private Array<FallingBlock> fallingBlocks;
     private Grid grid;
     private Texture backgroundTexture;
 
     private Block square;
-    private float spawnTimer;
-    private float gameSpeed = 1f;
+    private float gameSpeed = 0.3f; //lower = faster
     private float timer = 0;
     private int worldWidth, worldHeight;
 
@@ -40,11 +38,9 @@ public class GameScreen implements Screen {
         worldHeight = (int) game.fitViewport.getWorldHeight();
 
         backgroundTexture = new Texture("background.png");
-        fallingBlocks = new Array<>();
 
-        spawnTimer = 0;
         grid = new Grid(worldWidth, worldHeight);
-        square = new Block(10, worldHeight - 1, worldWidth, worldHeight);
+        square = new Block(0, worldHeight - 1, worldWidth, worldHeight);
     }
 
     @Override
@@ -52,18 +48,11 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        spawnTimer += delta;
         timer += delta;
-
-        if (spawnTimer > 1) {
-            spawnTimer = 0;
-            spawnFallingBlock();
-        }
 
         // ✅ Use MovementManager for movement
         MovementManager.updateBlock(square,grid, delta);
 
-        updateFallingBlocks(delta);
         logic();
         draw();
 
@@ -74,16 +63,14 @@ public class GameScreen implements Screen {
 
     public void logic() {
         if (timer >= gameSpeed) {
-            if (!square.bottomCollision(grid)) { 
-                square.fall(grid); // Only fall if there is no collision
-            } else {
-                grid.addBlock(square.getGridX(), square.getGridY()); // Stop block and mark it
-                square = new Block(5, worldHeight - 1, worldWidth, worldHeight); // Spawn new block
-            }
+            square.fall(grid);
             timer = 0;
         }
+        if (square.bottomCollision(grid)) {
+            grid.addBlock(square.getGridX(), square.getGridY()); // Stop block and mark it
+            square = new Block(square.getGridX(), worldHeight - 1, worldWidth, worldHeight); // Spawn new block
+        }
     }
-
 
 
     private void draw() {
@@ -105,34 +92,34 @@ public class GameScreen implements Screen {
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
         batch.end();
 
-        // Draw falling blocks
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.RED);
-        for (FallingBlock block : fallingBlocks) {
-            block.draw(shapeRenderer);
-        }
-        shapeRenderer.end();
+//        // Draw falling blocks
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//        shapeRenderer.setColor(Color.RED);
+//        for (FallingBlock block : fallingBlocks) {
+//            block.draw(shapeRenderer);
+//        }
+//        shapeRenderer.end();
 
         grid.draw(shapeRenderer, game.fitViewport);
         square.draw(shapeRenderer);
     }
 
-    private void spawnFallingBlock() {
-        float blockX = MathUtils.random(0, worldWidth - 1);
-        FallingBlock block = new FallingBlock(blockX, worldHeight, 1, 1);
-        fallingBlocks.add(block);
-    }
-
-    private void updateFallingBlocks(float delta) {
-        for (int i = fallingBlocks.size - 1; i >= 0; i--) {
-            FallingBlock block = fallingBlocks.get(i);
-            block.update(delta);
-
-            if (block.isOutOfBounds(worldHeight)) {
-                fallingBlocks.removeIndex(i);
-            }
-        }
-    }
+//    private void spawnFallingBlock() {
+//        float blockX = MathUtils.random(0, worldWidth - 1);
+//        FallingBlock block = new FallingBlock(blockX, worldHeight, 1, 1);
+//        fallingBlocks.add(block);
+//    }
+//
+//    private void updateFallingBlocks(float delta) {
+//        for (int i = fallingBlocks.size - 1; i >= 0; i--) {
+//            FallingBlock block = fallingBlocks.get(i);
+//            block.update(delta);
+//
+//            if (block.isOutOfBounds(worldHeight)) {
+//                fallingBlocks.removeIndex(i);
+//            }
+//        }
+//    }
 
     @Override
     public void resize(int width, int height) {

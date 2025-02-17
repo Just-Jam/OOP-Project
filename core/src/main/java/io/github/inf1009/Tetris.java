@@ -23,7 +23,7 @@ public class Tetris extends Game {
     public SceneManager sceneManager;  // SceneManager added
 
     // Sets the game board size by number
-    public final int gridColumns = 11;
+    public final int gridColumns = 5;
     public final int gridRows = 10;
 
     public void create() {

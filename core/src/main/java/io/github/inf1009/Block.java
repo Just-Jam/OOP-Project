@@ -35,7 +35,10 @@ public class Block {
     }
 
     public void fall(Grid grid) {
-        gridY -= 1;
+        if (bottomCollision(grid)) {
+            gridY = worldHeight -1;
+        }
+        else gridY -= 1;
         bounds.setPosition(gridX, gridY);
     }
 
