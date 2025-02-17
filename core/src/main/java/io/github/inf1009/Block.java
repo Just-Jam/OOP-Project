@@ -1,7 +1,5 @@
 package io.github.inf1009;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -15,21 +13,18 @@ public class Block {
         this.gridY = gridY;
         this.worldWidth = worldWidth;
         this.worldHeight = worldHeight;
-
         this.bounds = new Rectangle(gridX, gridY, 1, 1);
-
     }
 
-    public int getGridX() {
-        return gridX;
-    }
+    public int getGridX() { return gridX; }
+    public int getGridY() { return gridY; }
+    public void setGridY(int y) { gridY = y; }
 
-    public int getGridY() {
-        return gridY;
-    }
-
-    public void setGridY(int y) {
-        gridY = y;
+    // ✅ **NEW: Move Method**
+    public void move(int dx, int dy) {
+        gridX += dx;
+        gridY += dy;
+        bounds.setPosition(gridX, gridY);
     }
 
     public void draw(ShapeRenderer shapeRenderer) {
@@ -41,61 +36,24 @@ public class Block {
 
     public void fall(Grid grid) {
         gridY -= 1;
-
         bounds.setPosition(gridX, gridY);
     }
 
-    public void input(boolean[][] gridMatrix) {
-        // Right movement
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) && !rightCollision(gridMatrix)) {
-            gridX += 1;
+    public boolean bottomCollision(Grid grid) {
+        // 🚨 Check if block is at the bottom of the screen
+        if (gridY == 0) {
+            return true;
         }
 
-        // Left movement
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) && !leftCollision(gridMatrix)) {
-            gridX -= 1;
-        }
-        // Down movement
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) && !bottomCollision(gridMatrix)) {
-            gridY -= 1;
-        }
-
-//        if (gridY <= 0) {
-//            gridY = worldHeight - 1;
-//        }
-        bounds.setPosition(gridX, gridY);
+        // 🚨 Check if there is already a block below in the grid
+        return grid.isOccupied(gridX, gridY - 1);
     }
 
-    public boolean bottomCollision(boolean[][] gridMatrix) {
-
-        if (getGridY() == 0) {
-            return true;
-        }
-        else if (gridMatrix[getGridX()][getGridY() - 1]) {
-            return true;
-        }
-        return false;
+    public boolean rightCollision() {
+        return gridX == worldWidth - 1;  // 🚀 Prevents moving past right boundary
     }
 
-    public boolean rightCollision(boolean[][] gridMatrix) {
-        if (gridX == worldWidth - 1) {
-            return true;
-        }
-        if (gridMatrix[gridX + 1][gridY]) {
-            return true;
-        }
-        return false;
+    public boolean leftCollision() {
+        return gridX == 0;  // 🚀 Prevents moving past left boundary
     }
-
-    public boolean leftCollision(boolean[][] gridMatrix) {
-        if (gridX == 0) {
-            return true;
-        }
-        if (gridMatrix[gridX - 1][gridY]) {
-            return true;
-        }
-        return false;
-    }
-
-
 }

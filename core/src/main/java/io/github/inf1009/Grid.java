@@ -49,6 +49,10 @@ public class Grid {
         // End drawing
         shapeRenderer.end();
     }
+    public boolean isOccupied(int x, int y) {
+        return gridMatrix[x][y]; // Check if a block exists in that cell
+    }
+
 
     private void drawBlocks(ShapeRenderer shapeRenderer) {
         for (int col = 0; col < columns; col++) {

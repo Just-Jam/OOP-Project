@@ -12,16 +12,17 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.inf1009.*;
 import io.github.inf1009.manager.CollisionManager;
+import io.github.inf1009.manager.MovementManager;
 import io.github.inf1009.manager.SceneManager;
 
 public class GameScreen implements Screen {
-    private  Tetris game;
-    private  SceneManager sceneManager;
-    private  ShapeRenderer shapeRenderer;
-    private  SpriteBatch batch;
-    private  Array<FallingBlock> fallingBlocks;
-    private  Grid grid;
-    private  Texture backgroundTexture;
+    private Tetris game;
+    private SceneManager sceneManager;
+    private ShapeRenderer shapeRenderer;
+    private SpriteBatch batch;
+    private Array<FallingBlock> fallingBlocks;
+    private Grid grid;
+    private Texture backgroundTexture;
 
     private Block square;
     private float spawnTimer;
@@ -54,38 +55,36 @@ public class GameScreen implements Screen {
         spawnTimer += delta;
         timer += delta;
 
-        // Spawn a new block every 1 second
         if (spawnTimer > 1) {
             spawnTimer = 0;
             spawnFallingBlock();
         }
 
+        // ✅ Use MovementManager for movement
+        MovementManager.updateBlock(square,grid, delta);
+
         updateFallingBlocks(delta);
-        input();
         logic();
         draw();
 
-        // **NEW FEATURE** - Press ESC to go back to MainMenuScreen
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             sceneManager.setScreen(new MainMenuScreen(game));
         }
     }
 
-    private void input() {
-        square.input(grid.getGridMatrix());
-    }
-
     public void logic() {
         if (timer >= gameSpeed) {
-            square.fall(grid);
+            if (!square.bottomCollision(grid)) { 
+                square.fall(grid); // Only fall if there is no collision
+            } else {
+                grid.addBlock(square.getGridX(), square.getGridY()); // Stop block and mark it
+                square = new Block(5, worldHeight - 1, worldWidth, worldHeight); // Spawn new block
+            }
             timer = 0;
         }
-
-        if (square.bottomCollision(grid.getGridMatrix())) {
-            grid.addBlock(square.getGridX(), square.getGridY());
-            square.setGridY(worldHeight - 1);
-        }
     }
+
+
 
     private void draw() {
         ScreenUtils.clear(Color.DARK_GRAY);
