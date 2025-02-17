@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.inf1009.*;
-
+import io.github.inf1009.manager.CollisionManager;
 
 //core game logic goes here
 public class GameScreen implements Screen {
@@ -46,7 +46,7 @@ public class GameScreen implements Screen {
         worldWidth = (int) game.fitViewport.getWorldWidth();
         worldHeight = (int) game.fitViewport.getWorldHeight();
 
-        // load the images for the background, bucket and droplet
+        // load the images for the background, bucket and squares
         backgroundTexture = new Texture("background.png");
 
         bucket = new PlayerObject("bucket.png", 1, 1, 10, 10, (int) worldWidth, (int) worldHeight);
@@ -138,6 +138,7 @@ public class GameScreen implements Screen {
                 fallingBlocks.removeIndex(i); // Remove block if it falls below the screen
             }
         }
+        CollisionManager.checkCollisions(bucket, fallingBlocks);
     }
 
     @Override
