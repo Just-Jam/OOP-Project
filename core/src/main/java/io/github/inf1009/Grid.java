@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import java.util.ArrayList;
+
 public class Grid {
     private final int columns;
     private final int rows;
@@ -62,6 +64,30 @@ public class Grid {
                     shapeRenderer.setColor(Color.YELLOW);
                     shapeRenderer.rect(col, row, 1, 1);
                     shapeRenderer.end();
+                }
+            }
+        }
+    }
+
+    public void clearRow(ShapeRenderer shapeRenderer) {
+        //check rows filled
+        ArrayList<Boolean> completeRows = new ArrayList<Boolean>();
+        for (int row = 0; row < rows; row++) {
+            boolean rowComplete = true;
+            for (int col = 0; col < columns; col++) {
+                if (!gridMatrix[col][row]) {
+                    rowComplete = false;
+                    break;
+                }
+            }
+            completeRows.add(rowComplete);
+        }
+
+        //remove completed rows of blocks
+        for (int row = 0; row < rows; row++) {
+            if (completeRows.get(row)) {
+                for (int col = 0; col < columns; col++) {
+                    gridMatrix[col][row] = false;
                 }
             }
         }

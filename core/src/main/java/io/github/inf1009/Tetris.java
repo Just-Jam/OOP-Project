@@ -24,7 +24,7 @@ public class Tetris extends Game {
 
     // Sets the game board size by number
     public final int gridColumns = 11;
-    public final int gridRows = 24;
+    public final int gridRows = 10;
 
     public void create() {
         batch = new SpriteBatch();
