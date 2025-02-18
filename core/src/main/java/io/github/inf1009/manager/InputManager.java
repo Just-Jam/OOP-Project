@@ -1,12 +1,5 @@
 package io.github.inf1009.manager;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-
-public class InputManager extends InputAdapter {
-
-    public void update() {
-
-    }
+public class InputManager extends MovementManager {
+    // Override or extend input handling specific to input management
 }
