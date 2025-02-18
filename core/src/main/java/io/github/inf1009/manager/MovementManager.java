@@ -18,10 +18,4 @@ public class MovementManager extends InputAdapter {
             block.move(0, -1);
         }
     }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        // Example of handling key down in MovementManager, adjust based on InputManager's actual methods
-        return super.keyDown(keycode);
-    }
 }

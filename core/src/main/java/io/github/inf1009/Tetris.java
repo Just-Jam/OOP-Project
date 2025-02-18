@@ -13,18 +13,14 @@ import io.github.inf1009.screen.MainMenuScreen;
 public class Tetris extends Game {
     public SpriteBatch batch;
     public BitmapFont font;
-
-    public ScreenViewport leftViewport;
-    public ScreenViewport rightViewport;
+    public ScreenViewport leftViewport, rightViewport;
     public FitViewport fitViewport;
-
-    public Stage leftStage;
-    public Stage rightStage;
+    public Stage leftStage, rightStage;
     public SceneManager sceneManager;  // SceneManager added
 
     // Sets the game board size by number
-    public final int gridColumns = 5;
-    public final int gridRows = 10;
+    public final int GRID_COLUMNS = 5;
+    public final int GRID_ROWS  = 10;
 
     public void create() {
         batch = new SpriteBatch();
@@ -33,9 +29,11 @@ public class Tetris extends Game {
         // Viewports
         leftViewport = new ScreenViewport();
         leftStage = new Stage(leftViewport);
+        
         rightViewport = new ScreenViewport();
         rightStage = new Stage(rightViewport);
-        fitViewport = new FitViewport(gridColumns, gridRows);
+        
+        fitViewport = new FitViewport(GRID_COLUMNS, GRID_ROWS);
 
         // Scale font based on viewport height
         font.setUseIntegerPositions(false);

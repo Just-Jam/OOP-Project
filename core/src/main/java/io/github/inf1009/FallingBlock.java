@@ -1,8 +1,6 @@
 package io.github.inf1009;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
-import io.github.inf1009.*;
 
 public class FallingBlock extends BaseEntity {
     public FallingBlock(float x, float y, float width, float height) {

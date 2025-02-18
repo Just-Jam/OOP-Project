@@ -20,7 +20,7 @@ public class Block {
     public int getGridY() { return gridY; }
     public void setGridY(int y) { gridY = y; }
 
-    // ✅ **NEW: Move Method**
+    // Move Method
     public void move(int dx, int dy) {
         gridX += dx;
         gridY += dy;
@@ -35,28 +35,19 @@ public class Block {
     }
 
     public void fall(Grid grid) {
-        if (bottomCollision(grid)) {
-            gridY = worldHeight -1;
-        }
-        else gridY -= 1;
+    	gridY = bottomCollision(grid) ? worldHeight - 1 : gridY - 1;
         bounds.setPosition(gridX, gridY);
     }
 
     public boolean bottomCollision(Grid grid) {
-        // 🚨 Check if block is at the bottom of the screen
-        if (gridY == 0) {
-            return true;
-        }
-
-        // 🚨 Check if there is already a block below in the grid
-        return grid.isOccupied(gridX, gridY - 1);
+    	return gridY == 0 || grid.isOccupied(gridX, gridY - 1);
     }
 
     public boolean rightCollision() {
-        return gridX == worldWidth - 1;  // 🚀 Prevents moving past right boundary
+        return gridX == worldWidth - 1;  // Prevents moving past right boundary
     }
 
     public boolean leftCollision() {
-        return gridX == 0;  // 🚀 Prevents moving past left boundary
+        return gridX == 0;  // Prevents moving past left boundary
     }
 }

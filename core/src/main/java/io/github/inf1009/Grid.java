@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import java.util.ArrayList;
-
 public class Grid {
     private final int columns;
     private final int rows;
@@ -29,28 +27,21 @@ public class Grid {
     }
 
     public void draw(ShapeRenderer shapeRenderer, FitViewport fitViewport) {
-        drawGrid(shapeRenderer, fitViewport);
+        shapeRenderer.setProjectionMatrix(fitViewport.getCamera().combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(1, 1, 1, 1);
+        
+        for (int x = 0; x <= columns; x++) {
+            shapeRenderer.rect(x - 0.02f, 0, 0.04f, rows);
+        }
+        for (int y = 0; y <= rows; y++) {
+            shapeRenderer.rect(0, y - 0.02f, columns, 0.04f);
+        }
+        shapeRenderer.end();
+
         drawBlocks(shapeRenderer);
     }
-
-    private void drawGrid(ShapeRenderer shapeRenderer, FitViewport fitViewport) {
-        //draw grid
-        shapeRenderer.setProjectionMatrix(fitViewport.getCamera().combined);
-        // Begin drawing
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        // Set the color for the grid lines
-        shapeRenderer.setColor(1, 1, 1, 1); // White color
-        // Draw vertical lines
-        for (int x = 0; x <= columns; x++) {
-            shapeRenderer.rect(x - 0.02f, 0, 0.04f, rows); // Thin rectangle for vertical line
-        }
-        // Draw horizontal lines as rectangles
-        for (int y = 0; y <= rows; y++) {
-            shapeRenderer.rect(0, y - 0.02f, columns, 0.04f); // Thin rectangle for horizontal line
-        }
-        // End drawing
-        shapeRenderer.end();
-    }
+    
     public boolean isOccupied(int x, int y) {
         return gridMatrix[x][y]; // Check if a block exists in that cell
     }
@@ -69,9 +60,7 @@ public class Grid {
         }
     }
 
-    public void clearRow(ShapeRenderer shapeRenderer) {
-        //check rows filled
-        ArrayList<Boolean> completeRows = new ArrayList<Boolean>();
+    public void clearRow() {
         for (int row = 0; row < rows; row++) {
             boolean rowComplete = true;
             for (int col = 0; col < columns; col++) {
@@ -80,12 +69,7 @@ public class Grid {
                     break;
                 }
             }
-            completeRows.add(rowComplete);
-        }
-
-        //remove completed rows of blocks
-        for (int row = 0; row < rows; row++) {
-            if (completeRows.get(row)) {
+            if (rowComplete) {
                 for (int col = 0; col < columns; col++) {
                     gridMatrix[col][row] = false;
                 }
