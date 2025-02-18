@@ -7,10 +7,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import io.github.inf1009.Block;
-import io.github.inf1009.Grid;
-import io.github.inf1009.Tetris;
+import io.github.inf1009.*;
+import io.github.inf1009.manager.CollisionManager;
+import io.github.inf1009.manager.InputManager;
 import io.github.inf1009.manager.MovementManager;
 import io.github.inf1009.manager.SceneManager;
 
@@ -27,6 +29,9 @@ public class GameScreen implements Screen {
     private float timer = 0;
     private int worldWidth, worldHeight;
 
+    private MovementManager movementManager;
+    private InputManager inputManager;
+
     public GameScreen(final Tetris game) {
         this.game = game;
         this.sceneManager = game.sceneManager;
@@ -40,6 +45,10 @@ public class GameScreen implements Screen {
 
         grid = new Grid(worldWidth, worldHeight);
         square = new Block(0, worldHeight - 1, worldWidth, worldHeight);
+
+        movementManager = new MovementManager(square, grid);
+        inputManager = new InputManager(movementManager);
+        Gdx.input.setInputProcessor(inputManager);
     }
 
     @Override
@@ -49,8 +58,8 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         timer += delta;
 
-        // Use MovementManager for movement
-        MovementManager.updateBlock(square,grid, delta);
+        // ✅ Use MovementManager for movement
+
 
         logic();
         draw();
@@ -68,6 +77,7 @@ public class GameScreen implements Screen {
         if (square.bottomCollision(grid)) {
             grid.addBlock(square.getGridX(), square.getGridY()); // Stop block and mark it
             square = new Block(square.getGridX(), worldHeight - 1, worldWidth, worldHeight); // Spawn new block
+            movementManager.setBlock(square);
         }
     }
 
@@ -91,15 +101,42 @@ public class GameScreen implements Screen {
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
         batch.end();
 
+//        // Draw falling blocks
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//        shapeRenderer.setColor(Color.RED);
+//        for (FallingBlock block : fallingBlocks) {
+//            block.draw(shapeRenderer);
+//        }
+//        shapeRenderer.end();
+
         grid.draw(shapeRenderer, game.fitViewport);
         square.draw(shapeRenderer);
     }
+
+//    private void spawnFallingBlock() {
+//        float blockX = MathUtils.random(0, worldWidth - 1);
+//        FallingBlock block = new FallingBlock(blockX, worldHeight, 1, 1);
+//        fallingBlocks.add(block);
+//    }
+//
+//    private void updateFallingBlocks(float delta) {
+//        for (int i = fallingBlocks.size - 1; i >= 0; i--) {
+//            FallingBlock block = fallingBlocks.get(i);
+//            block.update(delta);
+//
+//            if (block.isOutOfBounds(worldHeight)) {
+//                fallingBlocks.removeIndex(i);
+//            }
+//        }
+//    }
 
     @Override
     public void resize(int width, int height) {
         game.fitViewport.update(width, height, true);
         game.leftViewport.update(game.fitViewport.getLeftGutterWidth(), height, true);
+        game.leftViewport.setScreenPosition(0, 0);
         game.rightViewport.update(game.fitViewport.getRightGutterWidth(), height, true);
+        game.rightViewport.setScreenPosition(game.fitViewport.getRightGutterX(), 0);
     }
 
     @Override
