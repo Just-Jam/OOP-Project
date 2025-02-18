@@ -26,8 +26,8 @@ public class MainMenuScreen implements Screen {
 
         game.batch.begin();
         // Draw text (x and y are in meters)
-        game.font.draw(game.batch, "Welcome to Tetris!!! ", 1, 1.5f);
-        game.font.draw(game.batch, "Tap anywhere to begin!", 1, 1);
+        game.font.draw(game.batch, "Welcome to Tetris!!! ", 1.5f, 5.5f);
+        game.font.draw(game.batch, "Tap anywhere to begin!", 1.4f, 5);
         game.batch.end();
 
         // Change screen using SceneManager when tapped
