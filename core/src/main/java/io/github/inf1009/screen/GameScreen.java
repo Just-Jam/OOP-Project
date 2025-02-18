@@ -59,7 +59,8 @@ public class GameScreen implements Screen {
         timer += delta;
 
         // ✅ Use MovementManager for movement
-
+        movementManager = new MovementManager(square, grid);
+        inputManager = new InputManager(movementManager);
 
         logic();
         draw();
@@ -101,34 +102,10 @@ public class GameScreen implements Screen {
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
         batch.end();
 
-//        // Draw falling blocks
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-//        shapeRenderer.setColor(Color.RED);
-//        for (FallingBlock block : fallingBlocks) {
-//            block.draw(shapeRenderer);
-//        }
-//        shapeRenderer.end();
-
         grid.draw(shapeRenderer, game.fitViewport);
         square.draw(shapeRenderer);
     }
 
-//    private void spawnFallingBlock() {
-//        float blockX = MathUtils.random(0, worldWidth - 1);
-//        FallingBlock block = new FallingBlock(blockX, worldHeight, 1, 1);
-//        fallingBlocks.add(block);
-//    }
-//
-//    private void updateFallingBlocks(float delta) {
-//        for (int i = fallingBlocks.size - 1; i >= 0; i--) {
-//            FallingBlock block = fallingBlocks.get(i);
-//            block.update(delta);
-//
-//            if (block.isOutOfBounds(worldHeight)) {
-//                fallingBlocks.removeIndex(i);
-//            }
-//        }
-//    }
 
     @Override
     public void resize(int width, int height) {

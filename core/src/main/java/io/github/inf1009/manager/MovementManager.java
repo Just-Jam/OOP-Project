@@ -6,17 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
 public class MovementManager {
-//    public static void updateBlock(Block block, Grid grid, float delta) {
-//        if (!block.leftCollision()) {
-//            block.move(-1, 0);
-//        }
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) && !block.rightCollision()) {
-//            block.move(1, 0);
-//        }
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) && !block.bottomCollision(grid)) { // ✅ Pass grid here
-//            block.move(0, -1);
-//        }
-//    }
 
     private Block block;
     private Grid grid;

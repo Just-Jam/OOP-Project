@@ -26,9 +26,4 @@ public class InputManager extends InputAdapter {
         }
         return true;
     }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return super.keyUp(keycode);
-    }
 }
