@@ -43,11 +43,17 @@ public class Block {
     	return gridY == 0 || grid.isOccupied(gridX, gridY - 1);
     }
 
-    public boolean rightCollision() {
-        return gridX == worldWidth - 1;  // Prevents moving past right boundary
+    public boolean rightCollision(Grid grid) {
+        if (gridX == worldWidth - 1) {
+            return true;
+        }
+        return grid.isOccupied(gridX + 1, gridY);
     }
 
-    public boolean leftCollision() {
-        return gridX == 0;  // Prevents moving past left boundary
+    public boolean leftCollision(Grid grid) {
+        if (gridX == 0) {
+            return true;
+        }
+        return grid.isOccupied(gridX - 1, gridY);
     }
 }

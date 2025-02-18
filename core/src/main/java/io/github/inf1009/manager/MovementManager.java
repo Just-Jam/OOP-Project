@@ -16,13 +16,13 @@ public class MovementManager {
     }
 
     public void moveLeft() {
-        if (!block.leftCollision()) {
+        if (!block.leftCollision(grid)) {
             block.move(-1, 0);
         }
     }
 
     public void moveRight() {
-        if (!block.rightCollision()) {
+        if (!block.rightCollision(grid)) {
             block.move(1, 0);
         }
     }

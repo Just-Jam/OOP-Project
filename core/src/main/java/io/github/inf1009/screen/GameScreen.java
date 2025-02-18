@@ -58,10 +58,6 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         timer += delta;
 
-        // ✅ Use MovementManager for movement
-        movementManager = new MovementManager(square, grid);
-        inputManager = new InputManager(movementManager);
-
         logic();
         draw();
 
