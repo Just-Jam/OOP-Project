@@ -1,26 +1,9 @@
 package io.github.inf1009;
 
-import com.badlogic.gdx.math.Rectangle;
+import io.github.inf1009.manager.EntityManager;
 
-public abstract class BaseEntity {
-    protected float x, y;
-    protected float speed;
-    protected Rectangle bounds;
-
+public abstract class BaseEntity extends EntityManager {
     public BaseEntity(float x, float y, float speed, float width, float height) {
-        this.x = x;
-        this.y = y;
-        this.speed = speed;
-        this.bounds = new Rectangle(x, y, width, height);
+        super(x, y, speed, width, height);
     }
-
-    public void move(float dx, float dy, float delta) {
-        this.x += dx * speed * delta;
-        this.y += dy * speed * delta;
-        bounds.setPosition(x, y);
-    }
-
-    public float getX() { return x; }
-    public float getY() { return y; }
-    public Rectangle getBounds() { return bounds; }
 }
