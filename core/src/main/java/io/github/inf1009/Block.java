@@ -29,7 +29,7 @@ public class Block {
 
     public void draw(ShapeRenderer shapeRenderer) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.BLUE);
+        shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.rect(gridX, gridY, 1, 1);
         shapeRenderer.end();
     }

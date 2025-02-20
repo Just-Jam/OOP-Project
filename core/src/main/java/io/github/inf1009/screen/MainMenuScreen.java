@@ -26,13 +26,18 @@ public class MainMenuScreen implements Screen {
 
         game.batch.begin();
         // Draw text (x and y are in meters)
-        game.font.draw(game.batch, "Welcome to Tetris!!! ", 1.5f, 5.5f);
-        game.font.draw(game.batch, "Tap anywhere to begin!", 1.4f, 5);
+        game.font.draw(game.batch, "Welcome to Our Engine!!! ", 1.3f, 5.5f);
+        game.font.draw(game.batch, "Tap anywhere to begin!", 1.3f, 5);
+        game.font.draw(game.batch, "INSTRUCTIONS:\nClick < to shift left"
+        		+ "\nClick > to shift right\nClick ESC to return to Main Menu", 1.3f, 4.5f);
+        
         game.batch.end();
 
         // Change screen using SceneManager when tapped
         if (Gdx.input.isTouched()) {
             sceneManager.setScreen(new GameScreen(game));
+            sceneManager.backgroundMusic.play();
+            sceneManager.menuMusic.stop();
         }
     }
 

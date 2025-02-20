@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class Grid {
     private final int columns;
     private final int rows;
+    private int boxcol=0;
 
     private boolean[][] gridMatrix;
 
@@ -24,6 +25,16 @@ public class Grid {
 
     public void addBlock(int x, int y) {
         gridMatrix[x][y] = true;
+        //color selector based on height
+        if(y>5) {
+        	boxcol=3;
+        }
+        else if(y>3 & boxcol!=3) {
+        	boxcol=2;
+        }
+        else if (y>1 & boxcol!=3) {
+        	boxcol=1;
+        }
     }
 
     public void draw(ShapeRenderer shapeRenderer, FitViewport fitViewport) {
@@ -52,7 +63,30 @@ public class Grid {
             for (int row = 0; row < rows; row++) {
                 if (gridMatrix[col][row]) {
                     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                    shapeRenderer.setColor(Color.YELLOW);
+                    //color selector
+                    switch (boxcol) {                    
+	                    case 1:
+	                    {
+	                    	shapeRenderer.setColor(Color.DARK_GRAY);
+	                    	break;
+	                    }
+	                    case 2:
+	                    {
+	                    	shapeRenderer.setColor(Color.FIREBRICK);
+	                    	break;
+	                    }
+	                    case 3:
+	                    {
+	                    	shapeRenderer.setColor(Color.RED);
+	                    	break;
+	                    }
+	                    default:
+	                    {
+	                    	shapeRenderer.setColor(Color.BLACK);
+	                    	break;
+	                    }
+                    }
+                    
                     shapeRenderer.rect(col, row, 1, 1);
                     shapeRenderer.end();
                 }

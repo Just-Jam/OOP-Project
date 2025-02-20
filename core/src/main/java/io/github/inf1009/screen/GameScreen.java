@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+
 import io.github.inf1009.*;
 import io.github.inf1009.manager.CollisionManager;
 import io.github.inf1009.manager.InputManager;
@@ -41,7 +42,7 @@ public class GameScreen implements Screen {
         worldWidth = (int) game.fitViewport.getWorldWidth();
         worldHeight = (int) game.fitViewport.getWorldHeight();
 
-        backgroundTexture = new Texture("background.png");
+        backgroundTexture = new Texture("spacetron.jpg");
 
         grid = new Grid(worldWidth, worldHeight);
         square = new Block(0, worldHeight - 1, worldWidth, worldHeight);
@@ -56,13 +57,14 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        timer += delta;
+    	timer += delta;
 
         logic();
         draw();
-
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             sceneManager.setScreen(new MainMenuScreen(game));
+            sceneManager.backgroundMusic.stop();
+            sceneManager.menuMusic.play();
         }
     }
 
@@ -80,7 +82,7 @@ public class GameScreen implements Screen {
 
 
     private void draw() {
-        ScreenUtils.clear(Color.DARK_GRAY);
+        ScreenUtils.clear(Color.NAVY);
 
         game.leftStage.act();
         game.rightStage.act();
@@ -97,7 +99,6 @@ public class GameScreen implements Screen {
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
         batch.end();
-
         grid.draw(shapeRenderer, game.fitViewport);
         square.draw(shapeRenderer);
     }
