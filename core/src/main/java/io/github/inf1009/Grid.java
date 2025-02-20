@@ -32,7 +32,7 @@ public class Grid {
         else if(y>3 & boxcol!=3) {
         	boxcol=2;
         }
-        else if (y>1 & boxcol!=3) {
+        else if (y>1 & boxcol!=3 & boxcol!=2) {
         	boxcol=1;
         }
     }

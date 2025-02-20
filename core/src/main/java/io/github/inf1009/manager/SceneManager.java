@@ -23,11 +23,11 @@ public class SceneManager {
         if (backgroundMusic ==null) {
         	menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Normaltune.mp3"));
         	menuMusic.setLooping(true);
-        	menuMusic.setVolume(0.5f);
+        	menuMusic.setVolume(0.03f);
         	menuMusic.play();
             backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Hypetune.mp3"));
         	backgroundMusic.setLooping(true);
-        	backgroundMusic.setVolume(0.5f);
+        	backgroundMusic.setVolume(0.03f);
         }
         currentScreen = newScreen;
         game.setScreen(currentScreen);

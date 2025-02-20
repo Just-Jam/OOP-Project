@@ -1,6 +1,7 @@
 package io.github.inf1009.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -32,9 +33,14 @@ public class MainMenuScreen implements Screen {
         		+ "\nClick > to shift right\nClick ESC to return to Main Menu", 1.3f, 4.5f);
         
         game.batch.end();
-
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            sceneManager.menuMusic.play();
+        }
+        else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            sceneManager.menuMusic.stop();
+        }
         // Change screen using SceneManager when tapped
-        if (Gdx.input.isTouched()) {
+        else if (Gdx.input.isTouched()) {
             sceneManager.setScreen(new GameScreen(game));
             sceneManager.backgroundMusic.play();
             sceneManager.menuMusic.stop();
