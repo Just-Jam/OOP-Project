@@ -32,7 +32,6 @@ public class MovementManager {
             block.move(0, -1);
         }
     }
-
     public void setBlock(Block block) {
         this.block = block;
     }

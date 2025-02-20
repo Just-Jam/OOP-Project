@@ -24,6 +24,7 @@ public class GameScreen implements Screen {
     private SpriteBatch batch;
     private Grid grid;
     private Texture backgroundTexture;
+    private Texture pausetexture;
 
     private Block square;
     private float gameSpeed = 0.3f; //lower = faster
@@ -43,6 +44,7 @@ public class GameScreen implements Screen {
         worldHeight = (int) game.fitViewport.getWorldHeight();
 
         backgroundTexture = new Texture("spacetron.jpg");
+        pausetexture= new Texture("gpause.png");
 
         grid = new Grid(worldWidth, worldHeight);
         square = new Block(0, worldHeight - 1, worldWidth, worldHeight);
@@ -57,10 +59,18 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-    	timer += delta;
-
         logic();
-        draw();
+        
+        if (inputManager.gamepause) {	
+    		pause();
+    	}
+    	else {
+    		resume();
+    		draw();
+    		timer += delta;
+    	}
+        
+        //return to main menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             sceneManager.setScreen(new MainMenuScreen(game));
             sceneManager.backgroundMusic.stop();
@@ -117,10 +127,21 @@ public class GameScreen implements Screen {
     public void hide() {}
 
     @Override
-    public void pause() {}
+    public void pause() {
+    	timer=0;
+    	sceneManager.backgroundMusic.pause();
+    	
+        ScreenUtils.clear(Color.BLACK);
+        batch.begin();
+        batch.draw(pausetexture, 0, 0, worldWidth, worldHeight);
+        batch.end();
+        }
 
     @Override
-    public void resume() {}
+    public void resume() {
+    	sceneManager.backgroundMusic.play();
+    	
+    }
 
     @Override
     public void dispose() {

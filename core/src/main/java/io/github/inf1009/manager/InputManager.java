@@ -10,7 +10,8 @@ public class InputManager extends InputAdapter {
     public InputManager(MovementManager movementManager) {
         this.movementManager = movementManager;
     }
-
+    public boolean gamepause=false;
+    
     @Override
     public boolean keyDown(int keycode) {
         switch (keycode) {
@@ -23,7 +24,10 @@ public class InputManager extends InputAdapter {
             case com.badlogic.gdx.Input.Keys.DOWN:
                 movementManager.moveDown();
                 break;
-        }
+            case com.badlogic.gdx.Input.Keys.SPACE:
+            	gamepause=!gamepause;
+            	return gamepause;
+       }
         return true;
     }
 }

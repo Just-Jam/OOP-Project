@@ -30,7 +30,8 @@ public class MainMenuScreen implements Screen {
         game.font.draw(game.batch, "Welcome to Our Engine!!! ", 1.3f, 5.5f);
         game.font.draw(game.batch, "Tap anywhere to begin!", 1.3f, 5);
         game.font.draw(game.batch, "INSTRUCTIONS:\nClick < to shift left"
-        		+ "\nClick > to shift right\nClick ESC to return to Main Menu", 1.3f, 4.5f);
+        		+ "\nClick > to shift right\nClick ESC to return to Main Menu"
+        		+ "\nClick Space at any time to pause\nor resume the game!", 1.3f, 4.5f);
         
         game.batch.end();
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {

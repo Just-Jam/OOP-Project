@@ -8,6 +8,7 @@ public class Grid {
     private final int columns;
     private final int rows;
     private int boxcol=0;
+    private int db=0;
 
     private boolean[][] gridMatrix;
 
@@ -27,12 +28,15 @@ public class Grid {
         gridMatrix[x][y] = true;
         //color selector based on height
         if(y>5) {
+        	db=3;
         	boxcol=3;
         }
         else if(y>3 & boxcol!=3) {
+        	db=2;
         	boxcol=2;
         }
         else if (y>1 & boxcol!=3 & boxcol!=2) {
+        	db=1;
         	boxcol=1;
         }
     }
@@ -40,8 +44,6 @@ public class Grid {
     public void draw(ShapeRenderer shapeRenderer, FitViewport fitViewport) {
         shapeRenderer.setProjectionMatrix(fitViewport.getCamera().combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(1, 1, 1, 1);
-        
         for (int x = 0; x <= columns; x++) {
             shapeRenderer.rect(x - 0.02f, 0, 0.04f, rows);
         }
@@ -66,27 +68,18 @@ public class Grid {
                     //color selector
                     switch (boxcol) {                    
 	                    case 1:
-	                    {
 	                    	shapeRenderer.setColor(Color.DARK_GRAY);
 	                    	break;
-	                    }
 	                    case 2:
-	                    {
 	                    	shapeRenderer.setColor(Color.FIREBRICK);
 	                    	break;
-	                    }
 	                    case 3:
-	                    {
 	                    	shapeRenderer.setColor(Color.RED);
 	                    	break;
-	                    }
 	                    default:
-	                    {
 	                    	shapeRenderer.setColor(Color.BLACK);
 	                    	break;
-	                    }
                     }
-                    
                     shapeRenderer.rect(col, row, 1, 1);
                     shapeRenderer.end();
                 }
