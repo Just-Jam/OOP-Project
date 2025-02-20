@@ -1,26 +1,31 @@
 package io.github.inf1009.manager;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import io.github.inf1009.Block;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntityManager {
-    protected float x, y;
-    protected float speed;
-    protected Rectangle bounds;
+    private List<Block> entityList;
 
-    public EntityManager(float x, float y, float speed, float width, float height) {
-        this.x = x;
-        this.y = y;
-        this.speed = speed;
-        this.bounds = new Rectangle(x, y, width, height);
+    public EntityManager() {
+        entityList = new ArrayList<>();
     }
 
-    public void move(float dx, float dy, float delta) {
-        this.x += dx * speed * delta;
-        this.y += dy * speed * delta;
-        bounds.setPosition(x, y);
+    public void addBlock(Block block) {
+        entityList.add(block);
     }
 
-    public float getX() { return x; }
-    public float getY() { return y; }
-    public Rectangle getBounds() { return bounds; }
+    public void draw(ShapeRenderer shapeRenderer) {
+        for (Block block: entityList) {
+            block.draw(shapeRenderer);
+        }
+    }
+
+    public void dispose() {
+        entityList.clear();
+    }
+
 }
