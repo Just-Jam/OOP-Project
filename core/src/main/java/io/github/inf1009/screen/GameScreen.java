@@ -85,6 +85,7 @@ public class GameScreen implements Screen {
         }
         if (square.bottomCollision(grid)) {
             grid.addBlock(square.getGridX(), square.getGridY()); // Stop block and mark it
+            grid.clearRow();
             square = new Block(square.getGridX(), worldHeight - 1, worldWidth, worldHeight); // Spawn new block
             movementManager.setBlock(square);
         }
