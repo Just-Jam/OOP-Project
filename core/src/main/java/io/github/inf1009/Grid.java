@@ -89,18 +89,37 @@ public class Grid {
 
     public void clearRow() {
         for (int row = 0; row < rows; row++) {
-            boolean rowComplete = true;
+            if (checkRowComplete(row)) {
+                clearRow(row);
+                shiftRowsDown(row);
+            }
+        }
+    }
+
+    private boolean checkRowComplete(int row) {
+        for (int col = 0; col < columns; col++) {
+            if (!gridMatrix[col][row]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void clearRow(int row) {
+        for (int col = 0; col < columns; col++) {
+            gridMatrix[col][row] = false;
+        }
+    }
+
+    private void shiftRowsDown(int clearedRow) {
+        for (int row = clearedRow; row < rows - 1; row++) {
             for (int col = 0; col < columns; col++) {
-                if (!gridMatrix[col][row]) {
-                    rowComplete = false;
-                    break;
-                }
+                gridMatrix[col][row] = gridMatrix[col][row + 1];
             }
-            if (rowComplete) {
-                for (int col = 0; col < columns; col++) {
-                    gridMatrix[col][row] = false;
-                }
-            }
+        }
+        // Clear the top row as it has no row above it
+        for (int col = 0; col < columns; col++) {
+            gridMatrix[col][rows - 1] = false;
         }
     }
 }
