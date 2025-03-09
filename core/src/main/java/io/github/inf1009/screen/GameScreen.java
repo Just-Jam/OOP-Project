@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -59,9 +60,13 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
         logic();
-        
-        if (inputManager.gamepause) {	
+
+        if (inputManager.gamepause) {
     		pause();
     	}
     	else {
@@ -69,13 +74,15 @@ public class GameScreen implements Screen {
     		draw();
     		timer += delta;
     	}
-        
+
         //return to main menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             sceneManager.setScreen(new MainMenuScreen(game));
             sceneManager.backgroundMusic.stop();
             sceneManager.menuMusic.play();
         }
+
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     public void logic() {
@@ -131,7 +138,7 @@ public class GameScreen implements Screen {
     public void pause() {
     	timer=0;
     	sceneManager.backgroundMusic.pause();
-    	
+
         ScreenUtils.clear(Color.BLACK);
         batch.begin();
         batch.draw(pausetexture, 0, 0, worldWidth, worldHeight);
@@ -141,7 +148,7 @@ public class GameScreen implements Screen {
     @Override
     public void resume() {
     	sceneManager.backgroundMusic.play();
-    	
+
     }
 
     @Override

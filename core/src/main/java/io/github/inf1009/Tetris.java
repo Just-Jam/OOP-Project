@@ -19,8 +19,8 @@ public class Tetris extends Game {
     public SceneManager sceneManager;  // SceneManager added
 
     // Sets the game board size by number
-    public final int GRID_COLUMNS = 5;
-    public final int GRID_ROWS  = 10;
+    public final int GRID_COLUMNS = 10; //even number
+    public final int GRID_ROWS  = 15;
 
     public void create() {
         batch = new SpriteBatch();
@@ -29,10 +29,10 @@ public class Tetris extends Game {
         // Viewports
         leftViewport = new ScreenViewport();
         leftStage = new Stage(leftViewport);
-        
+
         rightViewport = new ScreenViewport();
         rightStage = new Stage(rightViewport);
-        
+
         fitViewport = new FitViewport(GRID_COLUMNS, GRID_ROWS);
 
         // Scale font based on viewport height
@@ -45,13 +45,13 @@ public class Tetris extends Game {
     }
 
     public void render() {
-    	
+
         super.render();
     }
 
     public void dispose() {
         batch.dispose();
         font.dispose();
-        
+
     }
 }

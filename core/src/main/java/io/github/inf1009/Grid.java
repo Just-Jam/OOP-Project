@@ -43,18 +43,13 @@ public class Grid {
 
     public void draw(ShapeRenderer shapeRenderer, FitViewport fitViewport) {
         shapeRenderer.setProjectionMatrix(fitViewport.getCamera().combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        for (int x = 0; x <= columns; x++) {
-            shapeRenderer.rect(x - 0.02f, 0, 0.04f, rows);
-        }
-        for (int y = 0; y <= rows; y++) {
-            shapeRenderer.rect(0, y - 0.02f, columns, 0.04f);
-        }
-        shapeRenderer.end();
 
+
+        drawCategorizeAreas(shapeRenderer);
         drawBlocks(shapeRenderer);
+
     }
-    
+
     public boolean isOccupied(int x, int y) {
         return gridMatrix[x][y]; // Check if a block exists in that cell
     }
@@ -66,7 +61,7 @@ public class Grid {
                 if (gridMatrix[col][row]) {
                     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
                     //color selector
-                    switch (boxcol) {                    
+                    switch (boxcol) {
 	                    case 1:
 	                    	shapeRenderer.setColor(Color.DARK_GRAY);
 	                    	break;
@@ -89,37 +84,42 @@ public class Grid {
 
     public void clearRow() {
         for (int row = 0; row < rows; row++) {
-            if (checkRowComplete(row)) {
-                clearRow(row);
-                shiftRowsDown(row);
-            }
-        }
-    }
-
-    private boolean checkRowComplete(int row) {
-        for (int col = 0; col < columns; col++) {
-            if (!gridMatrix[col][row]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void clearRow(int row) {
-        for (int col = 0; col < columns; col++) {
-            gridMatrix[col][row] = false;
-        }
-    }
-
-    private void shiftRowsDown(int clearedRow) {
-        for (int row = clearedRow; row < rows - 1; row++) {
+            boolean rowComplete = true;
             for (int col = 0; col < columns; col++) {
-                gridMatrix[col][row] = gridMatrix[col][row + 1];
+                if (!gridMatrix[col][row]) {
+                    rowComplete = false;
+                    break;
+                }
+            }
+            if (rowComplete) {
+                for (int col = 0; col < columns; col++) {
+                    gridMatrix[col][row] = false;
+                }
             }
         }
-        // Clear the top row as it has no row above it
-        for (int col = 0; col < columns; col++) {
-            gridMatrix[col][rows - 1] = false;
+    }
+
+    public void drawCategorizeAreas(ShapeRenderer shapeRenderer) {
+
+        //draw grid lines
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        for (int x = 0; x <= columns; x++) {
+            if (x <= columns/2) {
+                shapeRenderer.setColor(Color.GREEN);
+            }
+            else {shapeRenderer.setColor(Color.RED);}
+            shapeRenderer.rect(x - 0.02f, 0, 0.04f, rows);
         }
+
+        shapeRenderer.setColor(Color.GREEN);
+        for (int y = 0; y <= rows; y++) {
+            shapeRenderer.rect(0, y - 0.02f, columns/2, 0.04f);
+        }
+
+        shapeRenderer.setColor(Color.RED);
+        for (int y = 0; y <= rows; y++) {
+            shapeRenderer.rect(columns/2, y - 0.02f, columns, 0.04f);
+        }
+        shapeRenderer.end();
     }
 }
