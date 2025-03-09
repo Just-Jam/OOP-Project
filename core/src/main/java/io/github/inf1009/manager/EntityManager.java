@@ -3,7 +3,6 @@ package io.github.inf1009.manager;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import io.github.inf1009.Block;
-
 import java.util.ArrayList;
 import java.util.List;
 

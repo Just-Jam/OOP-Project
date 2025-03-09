@@ -5,20 +5,26 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Block {
+	public enum BlockType{
+		RECYCLABLE, UNRECYCLABLE
+	}
     private int gridX, gridY, worldWidth, worldHeight;
     private Rectangle bounds;
+    private BlockType type;
 
-    public Block(int gridX, int gridY, int worldWidth, int worldHeight) {
+    public Block(int gridX, int gridY, int worldWidth, int worldHeight, BlockType type) {
         this.gridX = gridX;
         this.gridY = gridY;
         this.worldWidth = worldWidth;
         this.worldHeight = worldHeight;
         this.bounds = new Rectangle(gridX, gridY, 1, 1);
+        this.type = type;
     }
 
     public int getGridX() { return gridX; }
     public int getGridY() { return gridY; }
     public void setGridY(int y) { gridY = y; }
+    public BlockType getType() {return type;}
 
     // Move Method
     public void move(int dx, int dy) {
@@ -29,7 +35,12 @@ public class Block {
 
     public void draw(ShapeRenderer shapeRenderer) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.WHITE);
+     // Assign color based on block type
+        if (type == BlockType.RECYCLABLE) {
+            shapeRenderer.setColor(Color.GREEN);
+        } else {
+            shapeRenderer.setColor(Color.RED);
+        }
         shapeRenderer.rect(gridX, gridY, 1, 1);
         shapeRenderer.end();
     }

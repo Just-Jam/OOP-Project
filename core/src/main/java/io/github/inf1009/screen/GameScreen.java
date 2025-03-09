@@ -48,7 +48,9 @@ public class GameScreen implements Screen {
         pausetexture= new Texture("gpause.png");
 
         grid = new Grid(worldWidth, worldHeight);
-        square = new Block(0, worldHeight - 1, worldWidth, worldHeight);
+        // Randomly assign the first block as Recyclable or Unrecyclable
+        Block.BlockType initialType = MathUtils.randomBoolean() ? Block.BlockType.RECYCLABLE : Block.BlockType.UNRECYCLABLE;
+        square = new Block(0, worldHeight - 1, worldWidth, worldHeight, initialType);
 
         movementManager = new MovementManager(square, grid);
         inputManager = new InputManager(movementManager);
@@ -90,13 +92,22 @@ public class GameScreen implements Screen {
             square.fall(grid);
             timer = 0;
         }
+        
         if (square.bottomCollision(grid)) {
-            grid.addBlock(square.getGridX(), square.getGridY()); // Stop block and mark it
+            // Use the existing type of the falling block
+            Block.BlockType currentType = square.getType(); 
+
+            grid.addBlock(square.getGridX(), square.getGridY(), currentType); // Keep type the same
             grid.clearRow();
-            square = new Block(square.getGridX(), worldHeight - 1, worldWidth, worldHeight); // Spawn new block
+
+            // Spawn a new block with a fresh random type
+            Block.BlockType newType = MathUtils.randomBoolean() ? Block.BlockType.RECYCLABLE : Block.BlockType.UNRECYCLABLE;
+            square = new Block(square.getGridX(), grid.getRows() - 1, grid.getColumns(), grid.getRows(), newType);
+
             movementManager.setBlock(square);
         }
     }
+
 
 
     private void draw() {
