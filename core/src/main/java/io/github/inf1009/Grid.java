@@ -85,19 +85,31 @@ public class Grid {
     public void clearRow() {
         for (int row = 0; row < rows; row++) {
             boolean rowComplete = true;
+
+            // Check if the row is completely filled
             for (int col = 0; col < columns; col++) {
                 if (!gridMatrix[col][row]) {
                     rowComplete = false;
                     break;
                 }
             }
+
+            // If a row is completed, shift everything above it down
             if (rowComplete) {
+                for (int r = row; r < rows - 1; r++) {
+                    for (int col = 0; col < columns; col++) {
+                        gridMatrix[col][r] = gridMatrix[col][r + 1]; // Move the row above down
+                    }
+                }
+
+                // Clear the top row after shifting
                 for (int col = 0; col < columns; col++) {
-                    gridMatrix[col][row] = false;
+                    gridMatrix[col][rows - 1] = false;
                 }
             }
         }
     }
+
 
     public void drawCategorizeAreas(ShapeRenderer shapeRenderer) {
 
