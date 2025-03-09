@@ -124,31 +124,73 @@ public class Grid {
 
     public void clearRow() {
         for (int row = 0; row < rows; row++) {
-            boolean rowComplete = true;
+            boolean leftSideFull = true;
+            boolean rightSideFull = true;
+            Block.BlockType leftSideType = null;
+            Block.BlockType rightSideType = null;
 
-            // Check if the row is completely filled
-            for (int col = 0; col < columns; col++) {
-                if (gridMatrix[col][row] ==  null) {
-                    rowComplete = false;
+            // Check the left (green) section
+            for (int col = 0; col < columns / 2; col++) {
+                if (gridMatrix[col][row] == null) {
+                    leftSideFull = false;
+                    break;
+                }
+                if (leftSideType == null) {
+                    leftSideType = gridMatrix[col][row];
+                }
+                if (gridMatrix[col][row] != leftSideType) {
+                    leftSideFull = false; // The row is mixed with different colors
                     break;
                 }
             }
 
-            // If a row is completed, shift everything above it down
-            if (rowComplete) {
-                for (int r = row; r < rows - 1; r++) {
-                    for (int col = 0; col < columns; col++) {
-                        gridMatrix[col][r] = gridMatrix[col][r + 1]; // Move the row above down
-                    }
+            // Check the right (red) section
+            for (int col = columns / 2; col < columns; col++) {
+                if (gridMatrix[col][row] == null) {
+                    rightSideFull = false;
+                    break;
                 }
+                if (rightSideType == null) {
+                    rightSideType = gridMatrix[col][row];
+                }
+                if (gridMatrix[col][row] != rightSideType) {
+                    rightSideFull = false; // The row is mixed with different colors
+                    break;
+                }
+            }
 
-                // Clear the top row after shifting
-                for (int col = 0; col < columns; col++) {
-                    gridMatrix[col][rows - 1] = null;
-                }
+            // Clear the left section only if it's completely filled with green blocks
+            if (leftSideFull && leftSideType == Block.BlockType.RECYCLABLE) {
+                clearSpecificSection(row, 0, columns / 2);
+            }
+
+            // Clear the right section only if it's completely filled with red blocks
+            if (rightSideFull && rightSideType == Block.BlockType.UNRECYCLABLE) {
+                clearSpecificSection(row, columns / 2, columns);
             }
         }
     }
+
+    // Helper method to clear only a section of the row
+    private void clearSpecificSection(int row, int startCol, int endCol) {
+        // Clear only the relevant section
+        for (int col = startCol; col < endCol; col++) {
+            gridMatrix[col][row] = null;
+        }
+
+        // Shift down only within the cleared section
+        for (int r = row; r < rows - 1; r++) {
+            for (int col = startCol; col < endCol; col++) {
+                gridMatrix[col][r] = gridMatrix[col][r + 1]; // Move row above down
+            }
+        }
+
+        // Clear the top row after shifting
+        for (int col = startCol; col < endCol; col++) {
+            gridMatrix[col][rows - 1] = null;
+        }
+    }
+
 
 
     public void drawCategorizeAreas(ShapeRenderer shapeRenderer) {
