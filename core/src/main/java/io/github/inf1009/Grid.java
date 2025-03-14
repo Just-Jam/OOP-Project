@@ -11,8 +11,6 @@ public class Grid {
     private int db=0;
     private Block.BlockType[][] gridMatrix; //Store Blocktype instead of bool
 
-//    private boolean[][] gridMatrix;
-
     public Grid(int columns, int rows) {
         this.columns = columns;
         this.rows = rows;
@@ -67,7 +65,7 @@ public class Grid {
             for (int row = 0; row < rows; row++) {
                 if (gridMatrix[col][row] != null) {
                     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                    
+
                     if (gridMatrix[col][row] == Block.BlockType.RECYCLABLE) {
                         shapeRenderer.setColor(Color.GREEN);
                     } else {
@@ -195,7 +193,7 @@ public class Grid {
 
     public void drawCategorizeAreas(ShapeRenderer shapeRenderer) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        
+
         // Draw vertical grid lines
         for (int x = 0; x <= columns; x++) {
             if (x <= columns / 2) {
@@ -214,7 +212,7 @@ public class Grid {
             shapeRenderer.setColor(new Color(1, 0, 0, 0.5f)); // Semi-transparent Red
             shapeRenderer.line(columns / 2, y, columns, y);
         }
-        
+
         shapeRenderer.end();
     }
 

@@ -13,10 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import io.github.inf1009.*;
-import io.github.inf1009.manager.CollisionManager;
-import io.github.inf1009.manager.InputManager;
-import io.github.inf1009.manager.MovementManager;
-import io.github.inf1009.manager.SceneManager;
+import io.github.inf1009.manager.*;
 
 public class GameScreen implements Screen {
     private Tetris game;
@@ -34,6 +31,7 @@ public class GameScreen implements Screen {
 
     private MovementManager movementManager;
     private InputManager inputManager;
+    private GameStateManager gameStateManager;
 
     public GameScreen(final Tetris game) {
         this.game = game;
@@ -55,6 +53,8 @@ public class GameScreen implements Screen {
         movementManager = new MovementManager(square, grid);
         inputManager = new InputManager(movementManager);
         Gdx.input.setInputProcessor(inputManager);
+
+        gameStateManager = new GameStateManager();
     }
 
     @Override
@@ -77,12 +77,21 @@ public class GameScreen implements Screen {
     		timer += delta;
     	}
 
+        gameStateManager.checkIllegalMove(square, grid);
+
         //return to main menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             sceneManager.setScreen(new MainMenuScreen(game));
             sceneManager.backgroundMusic.stop();
             sceneManager.menuMusic.play();
         }
+
+        if (gameStateManager.isGameOver()) {
+            sceneManager.setScreen(new GameOverScreen(game));
+            sceneManager.backgroundMusic.stop();
+        }
+
+
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
@@ -92,10 +101,10 @@ public class GameScreen implements Screen {
             square.fall(grid);
             timer = 0;
         }
-        
+
         if (square.bottomCollision(grid)) {
             // Use the existing type of the falling block
-            Block.BlockType currentType = square.getType(); 
+            Block.BlockType currentType = square.getType();
 
             grid.addBlock(square.getGridX(), square.getGridY(), currentType); // Keep type the same
             grid.clearRow();
@@ -106,6 +115,8 @@ public class GameScreen implements Screen {
 
             movementManager.setBlock(square);
         }
+
+
     }
 
 
@@ -159,7 +170,6 @@ public class GameScreen implements Screen {
     @Override
     public void resume() {
     	sceneManager.backgroundMusic.play();
-
     }
 
     @Override
