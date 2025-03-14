@@ -2,22 +2,33 @@ package io.github.inf1009;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class Grid {
     private final int columns;
     private final int rows;
-    private int boxcol=0;
-    private int db=0;
-    private Block.BlockType[][] gridMatrix; //Store Blocktype instead of bool
+    private Block.BlockType[][] gridMatrix;
+    // Squish factors are used for recyclable blocks.
+    private float[][] squishFactors;
+    // Flag to indicate if a cell is in the process of being cleared.
+    private boolean[][] isClearing;
 
     public Grid(int columns, int rows) {
         this.columns = columns;
         this.rows = rows;
-
-        gridMatrix = new Block.BlockType[columns][rows]; // Initialize as null
-
+        gridMatrix = new Block.BlockType[columns][rows];
+        squishFactors = new float[columns][rows];
+        isClearing = new boolean[columns][rows];
+        // Initialize squish factors and clearing flags.
+        for (int col = 0; col < columns; col++) {
+            for (int row = 0; row < rows; row++) {
+                squishFactors[col][row] = 1.0f;
+                isClearing[col][row] = false;
+            }
+        }
     }
+
     public int getRows() {
         return rows;
     }
@@ -26,100 +37,60 @@ public class Grid {
         return columns;
     }
 
-//    public boolean[][] getGridMatrix() {
-//        return gridMatrix;
-//    }
     public Block.BlockType[][] getGridMatrix() {
         return gridMatrix;
     }
-//    public void addBlock(int x, int y) {
-//        gridMatrix[x][y] = true;
-//        //color selector based on height
-//        if(y>5) {
-//        	db=3;
-//        	boxcol=3;
-//        }
-//        else if(y>3 & boxcol!=3) {
-//        	db=2;
-//        	boxcol=2;
-//        }
-//        else if (y>1 & boxcol!=3 & boxcol!=2) {
-//        	db=1;
-//        	boxcol=1;
-//        }
-//    }
+
     public void addBlock(int x, int y, Block.BlockType type) {
-        gridMatrix[x][y] = type; // Store block type
+        gridMatrix[x][y] = type;
     }
+
     public boolean isOccupied(int x, int y) {
-        return gridMatrix[x][y] != null; // Check if a block exists in that cell
+        return gridMatrix[x][y] != null || isClearing[x][y];
     }
+
+    /**
+     * Draws the grid. Cells marked as clearing are drawn in 50% transparent grey.
+     * For recyclable blocks, the drawn height is based on the squish factor.
+     */
     public void draw(ShapeRenderer shapeRenderer, FitViewport fitViewport) {
         shapeRenderer.setProjectionMatrix(fitViewport.getCamera().combined);
 
-        // Draw categorized grid areas first
+        // Draw the categorized grid areas first.
         drawCategorizeAreas(shapeRenderer);
 
-        // Draw the blocks after the grid
+        // Draw blocks (or cells in the process of being cleared).
         for (int col = 0; col < columns; col++) {
             for (int row = 0; row < rows; row++) {
-                if (gridMatrix[col][row] != null) {
+                if (gridMatrix[col][row] != null || isClearing[col][row]) {
                     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-                    if (gridMatrix[col][row] == Block.BlockType.RECYCLABLE) {
-                        shapeRenderer.setColor(Color.GREEN);
+                    
+                    // If the cell is being cleared, use 50% transparent grey.
+                    if (isClearing[col][row]) {
+                        shapeRenderer.setColor(new Color(0.5f, 0.5f, 0.5f, 0.5f));
                     } else {
-                        shapeRenderer.setColor(Color.RED);
+                        // Otherwise, color based on block type.
+                        if (gridMatrix[col][row] == Block.BlockType.RECYCLABLE) {
+                            shapeRenderer.setColor(Color.GREEN);
+                        } else {
+                            shapeRenderer.setColor(Color.RED);
+                        }
                     }
-
-                    shapeRenderer.rect(col, row, 1, 1);
+                    
+                    // For recyclable cells, use the squish factor (even during clearing); for non-recyclable, full height.
+                    float height = (col < columns / 2) ? squishFactors[col][row] : 1.0f;
+                    shapeRenderer.rect(col, row, 1, height);
                     shapeRenderer.end();
                 }
             }
         }
     }
 
-//    public void draw(ShapeRenderer shapeRenderer, FitViewport fitViewport) {
-//        shapeRenderer.setProjectionMatrix(fitViewport.getCamera().combined);
-//
-//
-//        drawCategorizeAreas(shapeRenderer);
-//        drawBlocks(shapeRenderer);
-//
-//    }
-
-//    public boolean isOccupied(int x, int y) {
-//        return gridMatrix[x][y]; // Check if a block exists in that cell
-//    }
-
-
-//    private void drawBlocks(ShapeRenderer shapeRenderer) {
-//        for (int col = 0; col < columns; col++) {
-//            for (int row = 0; row < rows; row++) {
-//                if (gridMatrix[col][row]) {
-//                    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-//                    //color selector
-//                    switch (boxcol) {
-//	                    case 1:
-//	                    	shapeRenderer.setColor(Color.DARK_GRAY);
-//	                    	break;
-//	                    case 2:
-//	                    	shapeRenderer.setColor(Color.FIREBRICK);
-//	                    	break;
-//	                    case 3:
-//	                    	shapeRenderer.setColor(Color.RED);
-//	                    	break;
-//	                    default:
-//	                    	shapeRenderer.setColor(Color.BLACK);
-//	                    	break;
-//                    }
-//                    shapeRenderer.rect(col, row, 1, 1);
-//                    shapeRenderer.end();
-//                }
-//            }
-//        }
-//    }
-
+    /**
+     * Checks each row. For the left half (assumed RECYCLABLE) it uses the squish animation;
+     * for the right half (assumed NON RECYCLABLE) it uses the cooler (sequential clearing) animation.
+     * In both cases, cells are marked as clearing so that they appear grey and 50% transparent.
+     */
     public void clearRow() {
         for (int row = 0; row < rows; row++) {
             boolean leftSideFull = true;
@@ -127,7 +98,7 @@ public class Grid {
             Block.BlockType leftSideType = null;
             Block.BlockType rightSideType = null;
 
-            // Check the left (green) section
+            // Check the left (green/RECYCLABLE) section.
             for (int col = 0; col < columns / 2; col++) {
                 if (gridMatrix[col][row] == null) {
                     leftSideFull = false;
@@ -137,12 +108,12 @@ public class Grid {
                     leftSideType = gridMatrix[col][row];
                 }
                 if (gridMatrix[col][row] != leftSideType) {
-                    leftSideFull = false; // The row is mixed with different colors
+                    leftSideFull = false;
                     break;
                 }
             }
 
-            // Check the right (red) section
+            // Check the right (red/NON RECYCLABLE) section.
             for (int col = columns / 2; col < columns; col++) {
                 if (gridMatrix[col][row] == null) {
                     rightSideFull = false;
@@ -152,69 +123,159 @@ public class Grid {
                     rightSideType = gridMatrix[col][row];
                 }
                 if (gridMatrix[col][row] != rightSideType) {
-                    rightSideFull = false; // The row is mixed with different colors
+                    rightSideFull = false;
                     break;
                 }
             }
 
-            // Clear the left section only if it's completely filled with green blocks
+            // For recyclable blocks, mark cells as clearing and use the squish animation.
             if (leftSideFull && leftSideType == Block.BlockType.RECYCLABLE) {
-                clearSpecificSection(row, 0, columns / 2);
+                for (int col = 0; col < columns / 2; col++) {
+                    isClearing[col][row] = true;
+                }
+                final int finalRow = row;
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        animateSquishSection(finalRow, 0, columns / 2);
+                    }
+                }, 0.5f);
             }
 
-            // Clear the right section only if it's completely filled with red blocks
+            // For non recyclable blocks, mark cells as clearing and use the cooler animation.
             if (rightSideFull && rightSideType == Block.BlockType.UNRECYCLABLE) {
-                clearSpecificSection(row, columns / 2, columns);
+                for (int col = columns / 2; col < columns; col++) {
+                    isClearing[col][row] = true;
+                }
+                final int finalRow = row;
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        animateClearSection(finalRow, columns / 2, columns);
+                    }
+                }, 0.5f);
             }
         }
     }
 
-    // Helper method to clear only a section of the row
-    private void clearSpecificSection(int row, int startCol, int endCol) {
-        // Clear only the relevant section
+    /**
+     * Animates the squish effect for a section of a row (for recyclable blocks).
+     * After the squish animation completes, cells are shifted downward.
+     */
+    private void animateSquishSection(final int row, final int startCol, final int endCol) {
         for (int col = startCol; col < endCol; col++) {
-            gridMatrix[col][row] = null;
+            animateSquishCell(col, row);
         }
-
-        // Shift down only within the cleared section
-        for (int r = row; r < rows - 1; r++) {
-            for (int col = startCol; col < endCol; col++) {
-                gridMatrix[col][r] = gridMatrix[col][r + 1]; // Move row above down
+        // After the squish animation, shift down cells in the cleared section.
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                for (int r = row; r < rows - 1; r++) {
+                    for (int col = startCol; col < endCol; col++) {
+                        gridMatrix[col][r] = gridMatrix[col][r + 1];
+                        squishFactors[col][r] = squishFactors[col][r + 1];
+                        isClearing[col][r] = false; // reset clearing flag for shifted cell
+                    }
+                }
+                // Clear the top row in the section.
+                for (int col = startCol; col < endCol; col++) {
+                    gridMatrix[col][rows - 1] = null;
+                    squishFactors[col][rows - 1] = 1.0f;
+                    isClearing[col][rows - 1] = false;
+                }
             }
-        }
-
-        // Clear the top row after shifting
-        for (int col = startCol; col < endCol; col++) {
-            gridMatrix[col][rows - 1] = null;
-        }
+        }, 0.7f); // Delay slightly longer than the squish animation duration.
     }
 
+    /**
+     * Animates a squish effect on a single cell (for recyclable blocks) by gradually reducing its height.
+     * The cell is marked as clearing (drawn in 50% transparent grey) during the animation.
+     * Once complete, the cell is cleared.
+     */
+    private void animateSquishCell(final int col, final int row) {
+        isClearing[col][row] = true;
+        final int steps = 5;
+        final float stepDuration = 0.1f;
+        for (int i = 1; i <= steps; i++) {
+            final int currentStep = i;
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    float newFactor = 1.0f - ((float) currentStep / steps);
+                    squishFactors[col][row] = newFactor;
+                }
+            }, currentStep * stepDuration);
+        }
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                gridMatrix[col][row] = null;
+                squishFactors[col][row] = 1.0f;
+                isClearing[col][row] = false;
+            }
+        }, (steps + 1) * stepDuration);
+    }
 
+    /**
+     * Animates the clearing of a section of a row (for non recyclable blocks) by clearing each cell sequentially.
+     * Each cell is marked as clearing (50% transparent grey) before being cleared; afterward, cells above are shifted downward.
+     */
+    private void animateClearSection(final int row, final int startCol, final int endCol) {
+        float cellDelay = 0.1f;
+        int numCells = endCol - startCol;
+        for (int col = startCol; col < endCol; col++) {
+            final int currentCol = col;
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    isClearing[currentCol][row] = true;
+                }
+            }, (currentCol - startCol) * cellDelay);
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    gridMatrix[currentCol][row] = null;
+                    isClearing[currentCol][row] = false;
+                }
+            }, (currentCol - startCol) * cellDelay + 0.05f);
+        }
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                for (int r = row; r < rows - 1; r++) {
+                    for (int col = startCol; col < endCol; col++) {
+                        gridMatrix[col][r] = gridMatrix[col][r + 1];
+                        isClearing[col][r] = false;
+                    }
+                }
+                for (int col = startCol; col < endCol; col++) {
+                    gridMatrix[col][rows - 1] = null;
+                    isClearing[col][rows - 1] = false;
+                }
+            }
+        }, numCells * cellDelay);
+    }
 
+    /**
+     * Draws the grid's vertical and horizontal lines with categorized colors.
+     * The left half (greenish) and right half (reddish) are drawn as before.
+     */
     public void drawCategorizeAreas(ShapeRenderer shapeRenderer) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-        // Draw vertical grid lines
         for (int x = 0; x <= columns; x++) {
             if (x <= columns / 2) {
-                shapeRenderer.setColor(new Color(0, 1, 0, 0.5f)); // Semi-transparent Green
+                shapeRenderer.setColor(new Color(0, 1, 0, 0.5f));
             } else {
-                shapeRenderer.setColor(new Color(1, 0, 0, 0.5f)); // Semi-transparent Red
+                shapeRenderer.setColor(new Color(1, 0, 0, 0.5f));
             }
-            shapeRenderer.line(x, 0, x, rows); // Use line instead of rect for better rendering
+            shapeRenderer.line(x, 0, x, rows);
         }
-
-        // Draw horizontal grid lines
         for (int y = 0; y <= rows; y++) {
-            shapeRenderer.setColor(new Color(0, 1, 0, 0.5f)); // Semi-transparent Green
+            shapeRenderer.setColor(new Color(0, 1, 0, 0.5f));
             shapeRenderer.line(0, y, columns / 2, y);
-
-            shapeRenderer.setColor(new Color(1, 0, 0, 0.5f)); // Semi-transparent Red
+            shapeRenderer.setColor(new Color(1, 0, 0, 0.5f));
             shapeRenderer.line(columns / 2, y, columns, y);
         }
-
         shapeRenderer.end();
     }
-
-
 }
