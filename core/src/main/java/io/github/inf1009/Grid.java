@@ -1,7 +1,10 @@
 package io.github.inf1009;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -13,6 +16,9 @@ public class Grid {
     private float[][] squishFactors;
     // Flag to indicate if a cell is in the process of being cleared.
     private boolean[][] isClearing;
+    
+    // Array to store active fire animations for cleared rows (only for non recyclable blocks).
+    private Array<FireAnimation> fireAnimations;
 
     public Grid(int columns, int rows) {
         this.columns = columns;
@@ -20,6 +26,7 @@ public class Grid {
         gridMatrix = new Block.BlockType[columns][rows];
         squishFactors = new float[columns][rows];
         isClearing = new boolean[columns][rows];
+        fireAnimations = new Array<>();
         // Initialize squish factors and clearing flags.
         for (int col = 0; col < columns; col++) {
             for (int row = 0; row < rows; row++) {
@@ -52,6 +59,7 @@ public class Grid {
     /**
      * Draws the grid. Cells marked as clearing are drawn in 50% transparent grey.
      * For recyclable blocks, the drawn height is based on the squish factor.
+     * Also updates and draws any active fire animations.
      */
     public void draw(ShapeRenderer shapeRenderer, FitViewport fitViewport) {
         shapeRenderer.setProjectionMatrix(fitViewport.getCamera().combined);
@@ -84,12 +92,24 @@ public class Grid {
                 }
             }
         }
+        
+        // Update fire animations using the delta time.
+        float delta = Gdx.graphics.getDeltaTime();
+        updateFireAnimations(delta);
+        
+        // Draw fire animations on top of the grid.
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        for (int i = 0; i < fireAnimations.size; i++) {
+            fireAnimations.get(i).draw(shapeRenderer);
+        }
+        shapeRenderer.end();
     }
 
     /**
      * Checks each row. For the left half (assumed RECYCLABLE) it uses the squish animation;
-     * for the right half (assumed NON RECYCLABLE) it uses the cooler (sequential clearing) animation.
+     * for the right half (assumed NON RECYCLABLE) it uses the sequential clearing animation.
      * In both cases, cells are marked as clearing so that they appear grey and 50% transparent.
+     * The fire animation is added only for the non recyclable (right) section.
      */
     public void clearRow() {
         for (int row = 0; row < rows; row++) {
@@ -133,6 +153,7 @@ public class Grid {
                 for (int col = 0; col < columns / 2; col++) {
                     isClearing[col][row] = true;
                 }
+                // No fire animation for recyclable blocks.
                 final int finalRow = row;
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -142,11 +163,13 @@ public class Grid {
                 }, 0.5f);
             }
 
-            // For non recyclable blocks, mark cells as clearing and use the cooler animation.
+            // For non recyclable blocks, mark cells as clearing, add fire animation, and use the sequential clearing animation.
             if (rightSideFull && rightSideType == Block.BlockType.UNRECYCLABLE) {
                 for (int col = columns / 2; col < columns; col++) {
                     isClearing[col][row] = true;
                 }
+                // Add fire animation only for non recyclable blocks.
+                fireAnimations.add(new FireAnimation(row, columns / 2, columns));
                 final int finalRow = row;
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -277,5 +300,58 @@ public class Grid {
             shapeRenderer.line(columns / 2, y, columns, y);
         }
         shapeRenderer.end();
+    }
+    
+    /**
+     * Updates all active fire animations and removes any that have finished.
+     */
+    private void updateFireAnimations(float delta) {
+        for (int i = fireAnimations.size - 1; i >= 0; i--) {
+            FireAnimation fire = fireAnimations.get(i);
+            fire.update(delta);
+            if (fire.isFinished()) {
+                fireAnimations.removeIndex(i);
+            }
+        }
+    }
+
+    /**
+     * Inner class representing a simple fire animation over a row section.
+     * It draws flickering red/orange rectangles that fade over a set duration.
+     */
+    private class FireAnimation {
+        int row;
+        int startCol;
+        int endCol;
+        float timeElapsed;
+        float duration;
+
+        public FireAnimation(int row, int startCol, int endCol) {
+            this.row = row;
+            this.startCol = startCol;
+            this.endCol = endCol;
+            this.timeElapsed = 0;
+            this.duration = 0.7f; // Duration of the fire animation (in seconds)
+        }
+
+        public void update(float delta) {
+            timeElapsed += delta;
+        }
+
+        public boolean isFinished() {
+            return timeElapsed >= duration;
+        }
+
+        public void draw(ShapeRenderer shapeRenderer) {
+            // Fade out effect: alpha decreases as time passes.
+            float alpha = 1.0f - (timeElapsed / duration);
+            for (int col = startCol; col < endCol; col++) {
+                // Create a flickering effect by randomly choosing between two fire colors.
+                Color baseColor = MathUtils.randomBoolean(0.5f) ? Color.ORANGE : Color.RED;
+                Color fireColor = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
+                shapeRenderer.setColor(fireColor);
+                shapeRenderer.rect(col, row, 1, 1);
+            }
+        }
     }
 }
