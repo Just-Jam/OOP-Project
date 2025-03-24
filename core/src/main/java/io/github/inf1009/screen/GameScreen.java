@@ -29,6 +29,7 @@ public class GameScreen implements Screen {
     private float timer = 0;
     private int worldWidth, worldHeight;
 
+    private ViewportManager viewportManager;
     private MovementManager movementManager;
     private InputManager inputManager;
     private GameStateManager gameStateManager;
@@ -39,17 +40,18 @@ public class GameScreen implements Screen {
         this.shapeRenderer = new ShapeRenderer();
         this.batch = game.batch;
 
-        worldWidth = (int) game.fitViewport.getWorldWidth();
-        worldHeight = (int) game.fitViewport.getWorldHeight();
+        worldWidth = game.GRID_COLUMNS;
+        worldHeight = game.GRID_ROWS;
 
-        backgroundTexture = new Texture("spacetron.jpg");
-        pausetexture= new Texture("gpause.png");
+        backgroundTexture = new Texture("game_background.jpg");
+        pausetexture= new Texture("game_pause.png");
 
         grid = new Grid(worldWidth, worldHeight);
         // Randomly assign the first block as Recyclable or Unrecyclable
         Block.BlockType initialType = MathUtils.randomBoolean() ? Block.BlockType.RECYCLABLE : Block.BlockType.UNRECYCLABLE;
         square = new Block(0, worldHeight - 1, worldWidth, worldHeight, initialType);
 
+        viewportManager = game.viewportManager;
         movementManager = new MovementManager(square, grid);
         inputManager = new InputManager(movementManager);
         Gdx.input.setInputProcessor(inputManager);
@@ -66,6 +68,7 @@ public class GameScreen implements Screen {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
+        viewportManager.draw();
         logic();
 
         if (inputManager.gamepause) {
@@ -86,12 +89,10 @@ public class GameScreen implements Screen {
             sceneManager.menuMusic.play();
         }
 
-        if (gameStateManager.isGameOver()) {
+        if (gameStateManager.isGameOver() || Gdx.input.isKeyJustPressed(Input.Keys.O)) {
             sceneManager.setScreen(new GameOverScreen(game));
             sceneManager.backgroundMusic.stop();
         }
-
-
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
@@ -124,33 +125,18 @@ public class GameScreen implements Screen {
     private void draw() {
         ScreenUtils.clear(Color.NAVY);
 
-        game.leftStage.act();
-        game.rightStage.act();
-
-        game.leftViewport.apply();
-        game.leftStage.draw();
-
-        game.rightViewport.apply();
-        game.rightStage.draw();
-
-        game.fitViewport.apply();
-
-        batch.setProjectionMatrix(game.fitViewport.getCamera().combined);
+        batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
         batch.end();
-        grid.draw(shapeRenderer, game.fitViewport);
+        grid.draw(shapeRenderer, viewportManager.getFitViewport());
         square.draw(shapeRenderer);
     }
 
 
     @Override
     public void resize(int width, int height) {
-        game.fitViewport.update(width, height, true);
-        game.leftViewport.update(game.fitViewport.getLeftGutterWidth(), height, true);
-        game.leftViewport.setScreenPosition(0, 0);
-        game.rightViewport.update(game.fitViewport.getRightGutterWidth(), height, true);
-        game.rightViewport.setScreenPosition(game.fitViewport.getRightGutterX(), 0);
+        viewportManager.resize(width, height);
     }
 
     @Override
