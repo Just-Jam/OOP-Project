@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class Grid {
     private final int columns;
     private final int rows;
-    private Block.BlockType[][] gridMatrix;
+    private BlockShape.BlockType[][] gridMatrix;
     // Squish factors are used for recyclable blocks.
     private float[][] squishFactors;
     // Flag to indicate if a cell is in the process of being cleared.
@@ -23,7 +23,7 @@ public class Grid {
     public Grid(int columns, int rows) {
         this.columns = columns;
         this.rows = rows;
-        gridMatrix = new Block.BlockType[columns][rows];
+        gridMatrix = new BlockShape.BlockType[columns][rows];
         squishFactors = new float[columns][rows];
         isClearing = new boolean[columns][rows];
         fireAnimations = new Array<>();
@@ -44,11 +44,11 @@ public class Grid {
         return columns;
     }
 
-    public Block.BlockType[][] getGridMatrix() {
+    public BlockShape.BlockType[][] getGridMatrix() {
         return gridMatrix;
     }
 
-    public void addBlock(int x, int y, Block.BlockType type) {
+    public void addBlock(int x, int y, BlockShape.BlockType type) {
         gridMatrix[x][y] = type;
     }
 
@@ -78,7 +78,7 @@ public class Grid {
                         shapeRenderer.setColor(new Color(0.5f, 0.5f, 0.5f, 0.5f));
                     } else {
                         // Otherwise, color based on block type.
-                        if (gridMatrix[col][row] == Block.BlockType.RECYCLABLE) {
+                        if (gridMatrix[col][row] == BlockShape.BlockType.RECYCLABLE) {
                             shapeRenderer.setColor(Color.GREEN);
                         } else {
                             shapeRenderer.setColor(Color.RED);
@@ -115,8 +115,8 @@ public class Grid {
         for (int row = 0; row < rows; row++) {
             boolean leftSideFull = true;
             boolean rightSideFull = true;
-            Block.BlockType leftSideType = null;
-            Block.BlockType rightSideType = null;
+            BlockShape.BlockType leftSideType = null;
+            BlockShape.BlockType rightSideType = null;
 
             // Check the left (green/RECYCLABLE) section.
             for (int col = 0; col < columns / 2; col++) {
@@ -149,7 +149,7 @@ public class Grid {
             }
 
             // For recyclable blocks, mark cells as clearing and use the squish animation.
-            if (leftSideFull && leftSideType == Block.BlockType.RECYCLABLE) {
+            if (leftSideFull && leftSideType == BlockShape.BlockType.RECYCLABLE) {
                 for (int col = 0; col < columns / 2; col++) {
                     isClearing[col][row] = true;
                 }
@@ -164,7 +164,7 @@ public class Grid {
             }
 
             // For non recyclable blocks, mark cells as clearing, add fire animation, and use the sequential clearing animation.
-            if (rightSideFull && rightSideType == Block.BlockType.UNRECYCLABLE) {
+            if (rightSideFull && rightSideType == BlockShape.BlockType.UNRECYCLABLE) {
                 for (int col = columns / 2; col < columns; col++) {
                     isClearing[col][row] = true;
                 }
@@ -355,3 +355,4 @@ public class Grid {
         }
     }
 }
+
