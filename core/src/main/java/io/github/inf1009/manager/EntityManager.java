@@ -1,24 +1,23 @@
 package io.github.inf1009.manager;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
-import io.github.inf1009.Block;
+import io.github.inf1009.BlockShape;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EntityManager {
-    private List<Block> entityList;
+    private List<BlockShape> entityList;
 
     public EntityManager() {
         entityList = new ArrayList<>();
     }
 
-    public void addBlock(Block block) {
+    public void addBlock(BlockShape block) {
         entityList.add(block);
     }
 
     public void draw(ShapeRenderer shapeRenderer) {
-        for (Block block: entityList) {
+        for (BlockShape block: entityList) {
             block.draw(shapeRenderer);
         }
     }
@@ -26,5 +25,4 @@ public class EntityManager {
     public void dispose() {
         entityList.clear();
     }
-
 }
