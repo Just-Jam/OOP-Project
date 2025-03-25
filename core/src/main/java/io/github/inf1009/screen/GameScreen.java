@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import io.github.inf1009.*;
@@ -24,7 +22,7 @@ public class GameScreen implements Screen {
     private Texture backgroundTexture;
     private Texture pausetexture;
 
-    private Block square;
+    private BlockShape block;
     private float gameSpeed = 0.3f; //lower = faster
     private float timer = 0;
     private int worldWidth, worldHeight;
@@ -47,12 +45,10 @@ public class GameScreen implements Screen {
         pausetexture= new Texture("game_pause.png");
 
         grid = new Grid(worldWidth, worldHeight);
-        // Randomly assign the first block as Recyclable or Unrecyclable
-        Block.BlockType initialType = MathUtils.randomBoolean() ? Block.BlockType.RECYCLABLE : Block.BlockType.UNRECYCLABLE;
-        square = new Block(0, worldHeight - 1, worldWidth, worldHeight, initialType);
+        block = BlockFactory.createRandomBlock(worldWidth, worldHeight);
 
         viewportManager = game.viewportManager;
-        movementManager = new MovementManager(square, grid);
+        movementManager = new MovementManager(block, grid);
         inputManager = new InputManager(movementManager);
         Gdx.input.setInputProcessor(inputManager);
 
@@ -80,7 +76,7 @@ public class GameScreen implements Screen {
     		timer += delta;
     	}
 
-        gameStateManager.checkIllegalMove(square, grid);
+        gameStateManager.checkIllegalMove(block, grid);
 
         //return to main menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -99,22 +95,18 @@ public class GameScreen implements Screen {
 
     public void logic() {
         if (timer >= gameSpeed) {
-            square.fall(grid);
+            block.fall(grid);
             timer = 0;
         }
 
-        if (square.bottomCollision(grid)) {
-            // Use the existing type of the falling block
-            Block.BlockType currentType = square.getType();
-
-            grid.addBlock(square.getGridX(), square.getGridY(), currentType); // Keep type the same
+        if (block.bottomCollision(grid)) {
+            block.placeOnGrid(grid); // places all sub-blocks into grid
             grid.clearRow();
 
             // Spawn a new block with a fresh random type
-            Block.BlockType newType = MathUtils.randomBoolean() ? Block.BlockType.RECYCLABLE : Block.BlockType.UNRECYCLABLE;
-            square = new Block(square.getGridX(), grid.getRows() - 1, grid.getColumns(), grid.getRows(), newType);
+            block = BlockFactory.createRandomBlock(grid.getColumns(), grid.getRows());
 
-            movementManager.setBlock(square);
+            movementManager.setBlock(block);
         }
 
 
@@ -130,7 +122,7 @@ public class GameScreen implements Screen {
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
         batch.end();
         grid.draw(shapeRenderer, viewportManager.getFitViewport());
-        square.draw(shapeRenderer);
+        block.draw(shapeRenderer);
     }
 
 
@@ -164,3 +156,4 @@ public class GameScreen implements Screen {
         shapeRenderer.dispose();
     }
 }
+
