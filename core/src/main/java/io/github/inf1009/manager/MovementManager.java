@@ -7,10 +7,12 @@ public class MovementManager {
 
     private BlockShape block;
     private Grid grid;
+    private SoundManager soundManager;
 
-    public MovementManager(BlockShape block, Grid grid) {
+    public MovementManager(BlockShape block, Grid grid, SoundManager soundManager) {
         this.block = block;
         this.grid = grid;
+        this.soundManager = soundManager;
     }
 
     public void moveLeft() {
@@ -40,6 +42,7 @@ public class MovementManager {
     
     public void rotate() {
         block.rotate(grid);
+        soundManager.playRotateSound();
     }
     
     public void setBlock(BlockShape block) {
