@@ -29,10 +29,10 @@ public class MainMenuScreen implements Screen {
 
     public MainMenuScreen(final Tetris game) {
         this.game = game;
-        this.sceneManager = game.sceneManager; // Use SceneManager from Tetris
-        backgroundTexture = new Texture("title_art.png");
-
+        this.sceneManager = game.sceneManager;
         viewportManager = game.viewportManager;
+
+        backgroundTexture = new Texture("title_art.png");
         stage = new Stage(viewportManager.getFitViewport());
         Gdx.input.setInputProcessor(stage);
 
@@ -40,7 +40,7 @@ public class MainMenuScreen implements Screen {
         worldHeight = game.GRID_ROWS;
 
 //         Create button using reusable TextureButton class
-        playButton = new TextureButton("buttons/play_button.png", 5, 2, worldWidth / 2, worldHeight / 2, new ClickListener() {
+        playButton = new TextureButton("buttons/play_button.png", 4, 1, (float) worldWidth / 2, 6.5f, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 sceneManager.setScreen(new GameScreen(game));
@@ -55,23 +55,17 @@ public class MainMenuScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(Color.BLACK);
+
         viewportManager.draw();
+
         game.batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
-
         game.batch.begin();
-        game.batch.draw(backgroundTexture, 0, 0, game.GRID_COLUMNS, game.GRID_ROWS);
-        // Draw text (x and y are in meters)
-//        game.font.draw(game.batch, "Welcome to Our Engine!!! ", 1.3f, 5.5f);
-//        game.font.draw(game.batch, "Tap anywhere to begin!", 1.3f, 5);
-//        game.font.draw(game.batch, "INSTRUCTIONS:\nClick < to shift left"
-//        		+ "\nClick > to shift right\nClick ESC to return to Main Menu"
-//        		+ "\nClick Space at any time to pause\nor resume the game!", 1.3f, 4.5f);
-
+        game.batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
+        game.batch.end();
 
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
 
-        game.batch.end();
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             sceneManager.menuMusic.play();
         }

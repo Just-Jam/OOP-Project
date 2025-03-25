@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
 
 public class TextureButton {
     private final ImageButton button;
@@ -21,7 +22,9 @@ public class TextureButton {
         button.setSize(width , height);
         // Set the position of the button
         button.setPosition(x - (width / 2), y - (height / 2));
-        button.getImage().setAlign(Align.center);  // Centers the image within its cell
+        button.getImageCell().size(width, height);
+        button.getImage().setScaling(Scaling.fill);
+        button.getImageCell().fill();
         button.setDebug(true);  // Draws the hitbox in yellow TO REMOVE
         // Add click listener
         button.addListener(listener);

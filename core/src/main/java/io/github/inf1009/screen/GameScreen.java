@@ -108,11 +108,7 @@ public class GameScreen implements Screen {
 
             movementManager.setBlock(block);
         }
-
-
     }
-
-
 
     private void draw() {
         ScreenUtils.clear(Color.NAVY);

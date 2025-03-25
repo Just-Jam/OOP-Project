@@ -40,7 +40,7 @@ public class GameOverScreen implements Screen {
         worldHeight = game.GRID_ROWS;
 
 //         Create button using reusable TextureButton class
-        newGameButton = new TextureButton("buttons/new_game_button.png", 4, 1, worldWidth / 2, 6, new ClickListener() {
+        newGameButton = new TextureButton("buttons/new_game_button.png", 4, 1, (float) worldWidth / 2, 6, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 sceneManager.setScreen(new GameScreen(game));
@@ -49,7 +49,7 @@ public class GameOverScreen implements Screen {
             }
         });
 
-        quitButton = new TextureButton("buttons/quit_button.png", 4, 1, worldWidth / 2, 5, new ClickListener() {
+        quitButton = new TextureButton("buttons/quit_button.png", 4, 1, (float) worldWidth / 2, 5, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit();
