@@ -9,13 +9,16 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class Grid {
-    private final int columns;
+    public int score=0;
+    
+	private final int columns;
     private final int rows;
     private BlockShape.BlockType[][] gridMatrix;
     // Squish factors are used for recyclable blocks.
     private float[][] squishFactors;
     // Flag to indicate if a cell is in the process of being cleared.
     private boolean[][] isClearing;
+    
     
     // Array to store active fire animations for cleared rows (only for non recyclable blocks).
     private Array<FireAnimation> fireAnimations;
@@ -112,6 +115,7 @@ public class Grid {
      * The fire animation is added only for the non recyclable (right) section.
      */
     public void clearRow() {
+    	
         for (int row = 0; row < rows; row++) {
             boolean leftSideFull = true;
             boolean rightSideFull = true;
@@ -158,6 +162,7 @@ public class Grid {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
+                    	score+=5;
                         animateSquishSection(finalRow, 0, columns / 2);
                     }
                 }, 0.5f);
@@ -174,6 +179,7 @@ public class Grid {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
+                    	score+=5;
                         animateClearSection(finalRow, columns / 2, columns);
                     }
                 }, 0.5f);

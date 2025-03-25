@@ -31,6 +31,7 @@ public class GameScreen implements Screen {
     private InputManager inputManager;
     private GameStateManager gameStateManager;
     private EntityManager entityManager;
+    private CharSequence ptest=String.valueOf(0);
 
     public GameScreen(final Tetris game) {
         this.game = game;
@@ -76,9 +77,10 @@ public class GameScreen implements Screen {
     		draw();
     		timer += delta;
     	}
-
+        
         gameStateManager.checkIllegalMove(entityManager.getCurrentBlock(), grid);
-
+        
+        
         //return to main menu
 //        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 //            sceneManager.setScreen(new MainMenuScreen(game));
@@ -110,9 +112,12 @@ public class GameScreen implements Screen {
         batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
+        // edit font color later
+        game.font.draw(game.batch, ptest , (worldWidth-1.88f), (worldHeight-0.7f));
         batch.end();
         grid.draw(shapeRenderer, viewportManager.getFitViewport());
         entityManager.draw(shapeRenderer);
+        ptest=String.valueOf(grid.score);
     }
 
 
