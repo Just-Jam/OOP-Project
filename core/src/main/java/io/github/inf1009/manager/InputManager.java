@@ -1,9 +1,7 @@
 package io.github.inf1009.manager;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class InputManager extends InputAdapter {
     public MovementManager movementManager;
@@ -12,6 +10,10 @@ public class InputManager extends InputAdapter {
         this.movementManager = movementManager;
     }
     public boolean gamepause=false;
+    
+    public void rotate() {
+        movementManager.rotate();
+    }
 
     @Override
     public boolean keyDown(int keycode) {
@@ -25,7 +27,13 @@ public class InputManager extends InputAdapter {
             case com.badlogic.gdx.Input.Keys.DOWN:
                 movementManager.moveDown();
                 break;
+            case com.badlogic.gdx.Input.Keys.UP:
+                movementManager.rotate();
+                break;
             case com.badlogic.gdx.Input.Keys.SPACE:
+            	movementManager.immediateDrop();
+            	break;
+            case com.badlogic.gdx.Input.Keys.ESCAPE:
             	gamepause=!gamepause;
             	return gamepause;
        }
@@ -38,3 +46,4 @@ public class InputManager extends InputAdapter {
         return false;  // Return false so UI elements can also receive input
     }
 }
+
