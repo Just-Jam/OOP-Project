@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.inf1009.manager.SceneManager;
+import io.github.inf1009.manager.SoundManager;
 import io.github.inf1009.manager.ViewportManager;
 import io.github.inf1009.screen.MainMenuScreen;
 
@@ -17,6 +18,7 @@ public class Tetris extends Game {
 
     public SceneManager sceneManager;  // SceneManager added
     public ViewportManager viewportManager;
+    public SoundManager soundManager;
 
     // Sets the game board size by number
     public final int GRID_COLUMNS = 10; //even number
@@ -25,6 +27,7 @@ public class Tetris extends Game {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
+        soundManager = new SoundManager();
 
         // Viewports
         viewportManager = new ViewportManager(GRID_COLUMNS, GRID_ROWS);
@@ -36,6 +39,10 @@ public class Tetris extends Game {
         // Initialize SceneManager
         sceneManager = new SceneManager(this);
         sceneManager.setScreen(new MainMenuScreen(this)); // Use SceneManager for screen transitions
+    }
+    
+    public SoundManager getSoundManager() {
+        return soundManager;
     }
 
     public void render() {
