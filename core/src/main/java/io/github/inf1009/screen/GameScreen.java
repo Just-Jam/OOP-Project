@@ -9,7 +9,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import io.github.inf1009.*;
 import io.github.inf1009.manager.*;
@@ -33,7 +34,9 @@ public class GameScreen implements Screen {
     private GameStateManager gameStateManager;
     private EntityManager entityManager;
     private CharSequence ptest=String.valueOf(0);
-
+    private Stage previewStage;
+    private java.util.List<BlockShape> nextBlocks;
+    
     public GameScreen(final Tetris game) {
         this.game = game;
         this.sceneManager = game.sceneManager;
@@ -56,6 +59,13 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(inputManager);
 
         gameStateManager = new GameStateManager(game.getSoundManager());
+        
+        previewStage = new Stage(new ScreenViewport());
+        // Initialize the next-blocks queue.
+        nextBlocks = new java.util.ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            nextBlocks.add(BlockFactory.createRandomBlock(worldWidth, worldHeight));
+        }
     }
 
     @Override
@@ -103,8 +113,7 @@ public class GameScreen implements Screen {
             entityManager.getCurrentBlock().fall(grid);
             timer = 0;
         }
-        entityManager.update(movementManager);
-
+        entityManager.update(movementManager, nextBlocks);
     }
 
     private void draw() {
@@ -118,6 +127,37 @@ public class GameScreen implements Screen {
         grid.draw(shapeRenderer, viewportManager.getFitViewport());
         entityManager.draw(shapeRenderer);
         ptest=String.valueOf(grid.score);
+        drawNextBlocksPreview();
+    }
+    
+    private void drawNextBlocksPreview() {
+        // Switch to the UI stage's camera (which uses screen coordinates)
+        shapeRenderer.setProjectionMatrix(previewStage.getCamera().combined);
+        
+        // Define the preview area in screen coordinates.
+        // For example, we want the preview area to be in the right 200 pixels.
+        float previewX = Gdx.graphics.getWidth() - 180; // adjust as needed
+        float previewY = Gdx.graphics.getHeight() - 100;  // adjust as needed
+        float cellSize = 20;
+        
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        for (int i = 0; i < nextBlocks.size(); i++) {
+            BlockShape previewBlock = nextBlocks.get(i);
+            float currentOffsetY = previewY - i * (cellSize * 4); // vertical spacing between previews
+
+            // Set the block color based on its type.
+            if (previewBlock.getType() == BlockShape.BlockType.RECYCLABLE) {
+                shapeRenderer.setColor(Color.GREEN);
+            } else {
+                shapeRenderer.setColor(Color.RED);
+            }
+         // Draw the block with scaling
+            previewBlock.drawNextBlocks(shapeRenderer, previewX, currentOffsetY, cellSize);
+        }
+        shapeRenderer.end();
+        
+        // Restore the projection matrix to the game viewport.
+        shapeRenderer.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
     }
 
 
