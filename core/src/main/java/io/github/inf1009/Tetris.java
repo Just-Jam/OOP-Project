@@ -30,7 +30,10 @@ public class Tetris extends Game {
         soundManager = new SoundManager();
 
         // Viewports
-        viewportManager = new ViewportManager(GRID_COLUMNS, GRID_ROWS);
+        int gameWidth = GRID_COLUMNS;     //10 columns for gameplay
+        int gameHeight = GRID_ROWS;         //16 rows
+        int previewWidth = 4;                    // extra 4 columns for preview
+        viewportManager = new ViewportManager(gameWidth, gameHeight, previewWidth);
 
         // Scale font based on viewport height
         font.setUseIntegerPositions(false);
