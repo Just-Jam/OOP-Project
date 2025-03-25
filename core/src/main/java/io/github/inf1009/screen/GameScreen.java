@@ -120,15 +120,25 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(Color.NAVY);
 
         batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
+        
+        // Start drawing with the batch
         batch.begin();
+        
+        // Draw the background
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
-        game.font.draw(game.batch, ptest , (worldWidth-1.88f), (worldHeight-0.7f));
+        
+        // Draw the current block using the batch
+        entityManager.draw(shapeRenderer, batch);
+        
+        // End the batch drawing
         batch.end();
+
+        // Draw grid, score, and next blocks preview
         grid.draw(shapeRenderer, viewportManager.getFitViewport());
-        entityManager.draw(shapeRenderer);
-        ptest=String.valueOf(grid.score);
+        ptest = String.valueOf(grid.score);
         drawNextBlocksPreview();
     }
+
     
     private void drawNextBlocksPreview() {
         // Switch to the UI stage's camera (which uses screen coordinates)

@@ -1,5 +1,6 @@
 package io.github.inf1009.manager;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class EntityManager {
         }
     }
 
-    public void draw(ShapeRenderer shapeRenderer) {
-        currentBlock.draw(shapeRenderer);
+    public void draw(ShapeRenderer shapeRenderer, Batch batch) {
+        currentBlock.draw(shapeRenderer, batch);
     }
 }

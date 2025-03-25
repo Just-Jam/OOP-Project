@@ -2,12 +2,20 @@ package io.github.inf1009;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public abstract class BlockShape {
-	public enum BlockType {
+    private Texture blockImage;  // Texture to hold the block's image
+    private Sprite blockSprite;  // Sprite for rendering the image
+
+    public enum BlockType {
         RECYCLABLE,
         UNRECYCLABLE
     }
+
     private int gridX, gridY;
     private int worldWidth, worldHeight;
     private boolean[][] shape; // 2D matrix representing the shape
@@ -19,8 +27,29 @@ public abstract class BlockShape {
         this.worldWidth = worldWidth;
         this.worldHeight = worldHeight;
         this.type = type;
+
+        // Load the image based on type
+        if (type == BlockType.RECYCLABLE) {
+            blockImage = new Texture(getRandomRecyclableImage()); // Random recyclable image
+        } else {
+            blockImage = new Texture(getRandomUnrecyclableImage()); // Random unrecyclable image
+        }
+
+        blockSprite = new Sprite(blockImage);
+        blockSprite.setSize(1, 1);  // Set the size of the sprite to match the block size (1x1)
+        blockSprite.setOrigin(0, 0);  // Ensure the origin is at the top-left corner
     }
-    
+
+    private String getRandomRecyclableImage() {
+        String[] recyclableImages = {"bottle.png", "can.png", "cardboardbox.png", "glassbottle.png", "newspaper.png"};
+        return "RECYCLABLE/" + recyclableImages[MathUtils.random(0, recyclableImages.length - 1)];
+    }
+
+    private String getRandomUnrecyclableImage() {
+        String[] unrecyclableImages = {"apple.png", "banana.png", "icecream.png", "bubblewrap.png", "styrofoam.png"};
+        return "UNRECYCLABLE/" + unrecyclableImages[MathUtils.random(0, unrecyclableImages.length - 1)];
+    }
+
     public int getGridX() {
         return gridX;
     }
@@ -36,34 +65,32 @@ public abstract class BlockShape {
     public int getWorldHeight() {
         return worldHeight;
     }
-    
+
     public BlockType getType() {
-    	return type;
+        return type;
     }
 
     public boolean[][] getShapeMatrix() {
         return shape;
     }
-    
+
     protected void setShape(boolean[][] shape) {
         this.shape = shape;
     }
 
-    public void draw(ShapeRenderer shapeRenderer) {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(type == BlockType.RECYCLABLE ? Color.GREEN : Color.RED);
-
+    public void draw(ShapeRenderer shapeRenderer, Batch batch) {
+        // Loop through each cell in the shape matrix and draw the image for each 1x1 section
         for (int row = 0; row < shape.length; row++) {
-            for (int col = 0; col < shape[0].length; col++) {
+            for (int col = 0; col < shape[row].length; col++) {
                 if (shape[row][col]) {
-                    shapeRenderer.rect(gridX + col, gridY - row, 1, 1);
+                    // For each 1x1 block that is part of the shape, draw the image
+                    blockSprite.setPosition(gridX + col, gridY - row);  // Set the position for each 1x1 block
+                    blockSprite.draw(batch);  // Draw the image for the current 1x1 block
                 }
             }
         }
-
-        shapeRenderer.end();
     }
-    
+
     public void drawNextBlocks(ShapeRenderer shapeRenderer, float offsetX, float offsetY, float cellSize) {
         for (int row = 0; row < shape.length; row++) {
             for (int col = 0; col < shape[0].length; col++) {
@@ -76,7 +103,7 @@ public abstract class BlockShape {
             }
         }
     }
-    
+
     public void rotate(Grid grid) {
         boolean[][] rotated = rotateBlockClockwise(shape);
 
@@ -172,5 +199,11 @@ public abstract class BlockShape {
             }
         }
         return false;
+    }
+
+    public void dispose() {
+        if (blockImage != null) {
+            blockImage.dispose();  // Dispose of the texture to avoid memory leaks
+        }
     }
 }
