@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.audio.Sound;
 
 import io.github.inf1009.*;
 import io.github.inf1009.manager.*;
@@ -45,16 +46,16 @@ public class GameScreen implements Screen {
         backgroundTexture = new Texture("game_background.jpg");
         pausetexture= new Texture("game_pause.png");
 
-        grid = new Grid(worldWidth, worldHeight);
+        grid = new Grid(worldWidth, worldHeight, game.getSoundManager());
         entityManager = new EntityManager(grid);
         entityManager.spawnNewBlock();
 
         viewportManager = game.viewportManager;
-        movementManager = new MovementManager(entityManager.getCurrentBlock(), grid);
+        movementManager = new MovementManager(entityManager.getCurrentBlock(), grid, game.getSoundManager());
         inputManager = new InputManager(movementManager);
         Gdx.input.setInputProcessor(inputManager);
 
-        gameStateManager = new GameStateManager();
+        gameStateManager = new GameStateManager(game.getSoundManager());
     }
 
     @Override
@@ -77,10 +78,9 @@ public class GameScreen implements Screen {
     		draw();
     		timer += delta;
     	}
-        
+
         gameStateManager.checkIllegalMove(entityManager.getCurrentBlock(), grid);
-        
-        
+
         //return to main menu
 //        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 //            sceneManager.setScreen(new MainMenuScreen(game));
@@ -104,6 +104,7 @@ public class GameScreen implements Screen {
             timer = 0;
         }
         entityManager.update(movementManager);
+
     }
 
     private void draw() {
@@ -112,7 +113,6 @@ public class GameScreen implements Screen {
         batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
-        // edit font color later
         game.font.draw(game.batch, ptest , (worldWidth-1.88f), (worldHeight-0.7f));
         batch.end();
         grid.draw(shapeRenderer, viewportManager.getFitViewport());
