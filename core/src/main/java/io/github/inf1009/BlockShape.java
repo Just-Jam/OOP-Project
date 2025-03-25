@@ -64,6 +64,19 @@ public abstract class BlockShape {
         shapeRenderer.end();
     }
     
+    public void drawNextBlocks(ShapeRenderer shapeRenderer, float offsetX, float offsetY, float cellSize) {
+        for (int row = 0; row < shape.length; row++) {
+            for (int col = 0; col < shape[0].length; col++) {
+                if (shape[row][col]) {
+                    // Each cell is cellSize x cellSize in screen coordinates
+                    float drawX = offsetX + col * cellSize;
+                    float drawY = offsetY - row * cellSize;
+                    shapeRenderer.rect(drawX, drawY, cellSize, cellSize);
+                }
+            }
+        }
+    }
+    
     public void rotate(Grid grid) {
         boolean[][] rotated = rotateBlockClockwise(shape);
 
