@@ -14,8 +14,10 @@ public class GameStateManager {
     private float gameSpeed; //lower = faster
     private float timer;
     private GameState gameState;
+    private SoundManager soundManager;
 
-    public GameStateManager() {
+    public GameStateManager(SoundManager soundManager) {
+    	this.soundManager = soundManager;
         gameState = GameState.NORMAL;
     }
 
@@ -23,6 +25,7 @@ public class GameStateManager {
     public void checkIllegalMove(BlockShape block, Grid grid) {
         if (grid.isOccupied(block.getGridX(), block.getGridY())) {
             gameState = GameState.GAMEOVER;
+            soundManager.playGameOverSound();
         }
     }
 
