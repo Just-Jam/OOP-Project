@@ -7,25 +7,26 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import io.github.inf1009.manager.SoundManager;
 
 public class Grid {
-    public int score=0;
-    
-	private final int columns;
+	public int score=0;
+    private final int columns;
     private final int rows;
     private BlockShape.BlockType[][] gridMatrix;
     // Squish factors are used for recyclable blocks.
     private float[][] squishFactors;
     // Flag to indicate if a cell is in the process of being cleared.
     private boolean[][] isClearing;
-    
+    private SoundManager soundManager;
     
     // Array to store active fire animations for cleared rows (only for non recyclable blocks).
     private Array<FireAnimation> fireAnimations;
 
-    public Grid(int columns, int rows) {
+    public Grid(int columns, int rows, SoundManager soundManager) {
         this.columns = columns;
         this.rows = rows;
+        this.soundManager = soundManager;
         gridMatrix = new BlockShape.BlockType[columns][rows];
         squishFactors = new float[columns][rows];
         isClearing = new boolean[columns][rows];
@@ -53,6 +54,7 @@ public class Grid {
 
     public void addBlock(int x, int y, BlockShape.BlockType type) {
         gridMatrix[x][y] = type;
+        soundManager.playPlaceBlockSound();
     }
 
     public boolean isOccupied(int x, int y) {
@@ -115,7 +117,6 @@ public class Grid {
      * The fire animation is added only for the non recyclable (right) section.
      */
     public void clearRow() {
-    	
         for (int row = 0; row < rows; row++) {
             boolean leftSideFull = true;
             boolean rightSideFull = true;
@@ -157,7 +158,7 @@ public class Grid {
                 for (int col = 0; col < columns / 2; col++) {
                     isClearing[col][row] = true;
                 }
-                // No fire animation for recyclable blocks.
+                soundManager.playCrushSound();
                 final int finalRow = row;
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -173,7 +174,7 @@ public class Grid {
                 for (int col = columns / 2; col < columns; col++) {
                     isClearing[col][row] = true;
                 }
-                // Add fire animation only for non recyclable blocks.
+                soundManager.playBurningSound();
                 fireAnimations.add(new FireAnimation(row, columns / 2, columns));
                 final int finalRow = row;
                 Timer.schedule(new Timer.Task() {
