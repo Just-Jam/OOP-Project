@@ -11,7 +11,7 @@ public class BlockFactory {
         this.worldHeight = worldHeight;
     }
 
-    public BlockShape createRandomBlock() {
+    public static BlockShape createRandomBlock(int worldWidth, int worldHeight) {
         BlockShape.BlockType type = MathUtils.randomBoolean() ? BlockShape.BlockType.RECYCLABLE : BlockShape.BlockType.UNRECYCLABLE;
 
         int spawnX = (worldWidth / 2) - 1;
