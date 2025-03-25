@@ -25,7 +25,7 @@ public class TextureButton {
         button.getImageCell().size(width, height);
         button.getImage().setScaling(Scaling.fill);
         button.getImageCell().fill();
-        button.setDebug(true);  // Draws the hitbox in yellow TO REMOVE
+//        button.setDebug(true);  // Draws the hitbox in yellow TO REMOVE
         // Add click listener
         button.addListener(listener);
 

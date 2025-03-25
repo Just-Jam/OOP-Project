@@ -22,7 +22,6 @@ public class GameScreen implements Screen {
     private Texture backgroundTexture;
     private Texture pausetexture;
 
-    private BlockShape block;
     private float gameSpeed = 0.3f; //lower = faster
     private float timer = 0;
     private int worldWidth, worldHeight;
@@ -31,6 +30,7 @@ public class GameScreen implements Screen {
     private MovementManager movementManager;
     private InputManager inputManager;
     private GameStateManager gameStateManager;
+    private EntityManager entityManager;
 
     public GameScreen(final Tetris game) {
         this.game = game;
@@ -45,10 +45,11 @@ public class GameScreen implements Screen {
         pausetexture= new Texture("game_pause.png");
 
         grid = new Grid(worldWidth, worldHeight);
-        block = BlockFactory.createRandomBlock(worldWidth, worldHeight);
+        entityManager = new EntityManager(grid);
+        entityManager.spawnNewBlock();
 
         viewportManager = game.viewportManager;
-        movementManager = new MovementManager(block, grid);
+        movementManager = new MovementManager(entityManager.getCurrentBlock(), grid);
         inputManager = new InputManager(movementManager);
         Gdx.input.setInputProcessor(inputManager);
 
@@ -76,38 +77,31 @@ public class GameScreen implements Screen {
     		timer += delta;
     	}
 
-        gameStateManager.checkIllegalMove(block, grid);
+        gameStateManager.checkIllegalMove(entityManager.getCurrentBlock(), grid);
 
         //return to main menu
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            sceneManager.setScreen(new MainMenuScreen(game));
-            sceneManager.backgroundMusic.stop();
-            sceneManager.menuMusic.play();
-        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+//            sceneManager.setScreen(new MainMenuScreen(game));
+//            sceneManager.backgroundMusic.stop();
+//            sceneManager.menuMusic.play();
+//        }
 
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+        handleGameOver();
+    }
+    private void handleGameOver() {
         if (gameStateManager.isGameOver() || Gdx.input.isKeyJustPressed(Input.Keys.O)) {
             sceneManager.setScreen(new GameOverScreen(game));
             sceneManager.backgroundMusic.stop();
         }
-
-        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     public void logic() {
         if (timer >= gameSpeed) {
-            block.fall(grid);
+            entityManager.getCurrentBlock().fall(grid);
             timer = 0;
         }
-
-        if (block.bottomCollision(grid)) {
-            block.placeOnGrid(grid); // places all sub-blocks into grid
-            grid.clearRow();
-
-            // Spawn a new block with a fresh random type
-            block = BlockFactory.createRandomBlock(grid.getColumns(), grid.getRows());
-
-            movementManager.setBlock(block);
-        }
+        entityManager.update(movementManager);
     }
 
     private void draw() {
@@ -118,7 +112,7 @@ public class GameScreen implements Screen {
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
         batch.end();
         grid.draw(shapeRenderer, viewportManager.getFitViewport());
-        block.draw(shapeRenderer);
+        entityManager.draw(shapeRenderer);
     }
 
 
@@ -139,7 +133,7 @@ public class GameScreen implements Screen {
         batch.begin();
         batch.draw(pausetexture, 0, 0, worldWidth, worldHeight);
         batch.end();
-        }
+    }
 
     @Override
     public void resume() {

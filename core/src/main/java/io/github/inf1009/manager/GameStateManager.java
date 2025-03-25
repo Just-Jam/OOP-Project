@@ -11,8 +11,14 @@ public class GameStateManager {
         GAMEOVER
     }
 
-    private float gameSpeed;
-    private GameState gameState = GameState.NORMAL;
+    private float gameSpeed; //lower = faster
+    private float timer;
+    private GameState gameState;
+
+    public GameStateManager() {
+        gameState = GameState.NORMAL;
+    }
+
 
     public void checkIllegalMove(BlockShape block, Grid grid) {
         if (grid.isOccupied(block.getGridX(), block.getGridY())) {

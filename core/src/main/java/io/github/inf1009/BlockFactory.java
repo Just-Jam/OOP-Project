@@ -3,7 +3,15 @@ package io.github.inf1009;
 import com.badlogic.gdx.math.MathUtils;
 
 public class BlockFactory {
-    public static BlockShape createRandomBlock(int worldWidth, int worldHeight) {
+    private final int worldWidth;
+    private final int worldHeight;
+
+    public BlockFactory(int worldWidth, int worldHeight) {
+        this.worldWidth = worldWidth;
+        this.worldHeight = worldHeight;
+    }
+
+    public BlockShape createRandomBlock() {
         BlockShape.BlockType type = MathUtils.randomBoolean() ? BlockShape.BlockType.RECYCLABLE : BlockShape.BlockType.UNRECYCLABLE;
 
         int spawnX = (worldWidth / 2) - 1;

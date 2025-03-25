@@ -1,28 +1,41 @@
 package io.github.inf1009.manager;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import io.github.inf1009.BlockFactory;
 import io.github.inf1009.BlockShape;
-import java.util.ArrayList;
-import java.util.List;
+import io.github.inf1009.Grid;
 
 public class EntityManager {
-    private List<BlockShape> entityList;
+    private BlockShape currentBlock;
+    private Grid grid;
+    private BlockFactory blockFactory;
 
-    public EntityManager() {
-        entityList = new ArrayList<>();
+    public EntityManager(Grid grid) {
+        this.grid = grid;
+        blockFactory = new BlockFactory(grid.getColumns(), grid.getRows());
     }
 
-    public void addBlock(BlockShape block) {
-        entityList.add(block);
+    public void spawnNewBlock() {
+        currentBlock = blockFactory.createRandomBlock();
     }
 
-    public void draw(ShapeRenderer shapeRenderer) {
-        for (BlockShape block: entityList) {
-            block.draw(shapeRenderer);
+    public BlockShape getCurrentBlock() {
+        return currentBlock;
+    }
+
+    public void update(MovementManager movementManager) {
+        if (currentBlock.bottomCollision(grid)) {
+            currentBlock.placeOnGrid(grid); // places all sub-blocks into grid
+            grid.clearRow();
+
+            // Spawn a new block with a fresh random type
+            spawnNewBlock();
+
+            movementManager.setBlock(currentBlock);
         }
     }
 
-    public void dispose() {
-        entityList.clear();
+    public void draw(ShapeRenderer shapeRenderer) {
+        currentBlock.draw(shapeRenderer);
     }
 }
