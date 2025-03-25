@@ -1,6 +1,6 @@
 package io.github.inf1009.manager;
 
-import io.github.inf1009.Block;
+import io.github.inf1009.BlockShape;
 import io.github.inf1009.Grid;
 
 public class GameStateManager {
@@ -14,7 +14,7 @@ public class GameStateManager {
     private float gameSpeed;
     private GameState gameState = GameState.NORMAL;
 
-    public void checkIllegalMove(Block block, Grid grid) {
+    public void checkIllegalMove(BlockShape block, Grid grid) {
         if (grid.isOccupied(block.getGridX(), block.getGridY())) {
             gameState = GameState.GAMEOVER;
         }
