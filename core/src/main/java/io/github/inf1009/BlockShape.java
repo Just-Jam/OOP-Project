@@ -8,10 +8,10 @@ public abstract class BlockShape {
         RECYCLABLE,
         UNRECYCLABLE
     }
-    protected int gridX, gridY;
-    protected int worldWidth, worldHeight;
-    protected boolean[][] shape; // 2D matrix representing the shape
-    protected BlockType type;
+    private int gridX, gridY;
+    private int worldWidth, worldHeight;
+    private boolean[][] shape; // 2D matrix representing the shape
+    private BlockType type;
 
     public BlockShape(int gridX, int gridY, int worldWidth, int worldHeight, BlockType type) {
         this.gridX = gridX;
@@ -20,9 +20,33 @@ public abstract class BlockShape {
         this.worldHeight = worldHeight;
         this.type = type;
     }
+    
+    public int getGridX() {
+        return gridX;
+    }
+
+    public int getGridY() {
+        return gridY;
+    }
+
+    public int getWorldWidth() {
+        return worldWidth;
+    }
+
+    public int getWorldHeight() {
+        return worldHeight;
+    }
+    
+    public BlockType getType() {
+    	return type;
+    }
 
     public boolean[][] getShapeMatrix() {
         return shape;
+    }
+    
+    protected void setShape(boolean[][] shape) {
+        this.shape = shape;
     }
 
     public void draw(ShapeRenderer shapeRenderer) {
@@ -135,17 +159,5 @@ public abstract class BlockShape {
             }
         }
         return false;
-    }
-
-    public int getGridX() {
-    	return gridX; 
-    }
-    
-    public int getGridY() {
-    	return gridY;
-    }
-    
-    public BlockType getType() {
-    	return type;
     }
 }
