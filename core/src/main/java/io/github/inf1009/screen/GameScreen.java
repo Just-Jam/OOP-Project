@@ -65,7 +65,6 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(inputManager);
 
         gameStateManager = new GameStateManager(game.getSoundManager());
-
         previewStage = new Stage(new ScreenViewport());
         // Initialize the next-blocks queue.
         nextBlocks = new java.util.ArrayList<>();
@@ -107,13 +106,6 @@ public class GameScreen implements Screen {
     	}
 
         gameStateManager.checkIllegalMove(entityManager.getCurrentBlock(), grid);
-
-        //return to main menu
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-//            sceneManager.setScreen(new MainMenuScreen(game));
-//            sceneManager.backgroundMusic.stop();
-//            sceneManager.menuMusic.play();
-//        }
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
         handleGameOver();

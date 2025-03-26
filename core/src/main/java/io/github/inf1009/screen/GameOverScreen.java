@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -33,6 +34,8 @@ public class GameOverScreen implements Screen {
     private SceneManager sceneManager;
     private ViewportManager viewportManager;
     private Stage stage;
+    private BitmapFont font;
+    private List<ScoreEntry> topScores;
 
     public GameOverScreen(final Tetris game) {
         this.game = game;
@@ -46,7 +49,10 @@ public class GameOverScreen implements Screen {
         worldWidth = game.TOTAL_COLUMNS;
         worldHeight = game.GRID_ROWS;
         gameWidth = game.GRID_COLUMNS;
-
+        
+        
+        ScoreManager scoreManager = new ScoreManager();
+        topScores = scoreManager.getHighScores();
         
         //worldWidth = game.GRID_COLUMNS;
         //worldHeight = game.GRID_ROWS;
@@ -81,6 +87,17 @@ public class GameOverScreen implements Screen {
         game.batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         game.batch.begin();
         game.batch.draw(backgroundTexture, 0, 0, gameWidth, worldHeight);
+        // Position leaderboard in top-right corner (adjust as needed)
+        float leaderboardX = 5f;
+        float leaderboardY = 8.8f;
+        // X5 Y8.8 Mid
+        game.font.draw(game.batch, "High Scores:", leaderboardX, leaderboardY);
+        for (int i = 0; i < topScores.size(); i++) {
+            ScoreEntry entry = topScores.get(i);
+            String line = (i + 1) + ". " + entry.name + " - " + entry.score;
+            game.font.draw(game.batch, line, leaderboardX, leaderboardY - (i + 1) * 0.33f);
+          }
+
         game.batch.end();
 
         stage.act(Gdx.graphics.getDeltaTime());
