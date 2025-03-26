@@ -127,14 +127,15 @@ public class GameScreen implements Screen {
         
         // Draw the background
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
-        
+        game.font.draw(game.batch, ptest , (worldWidth-1.88f), (worldHeight-0.7f));
         // End the batch drawing
         batch.end();
         
         // Draw the grid and current block
         grid.draw(shapeRenderer, viewportManager.getFitViewport());
-        entityManager.draw(shapeRenderer, batch);
         
+        entityManager.draw(shapeRenderer, batch);
+        ptest=String.valueOf(grid.score);
         // Draw next blocks preview
         drawNextBlocksPreview();
     }

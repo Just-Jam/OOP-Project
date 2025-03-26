@@ -163,7 +163,7 @@ public class Grid {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
-                    	score+=5;
+                    	score+=50;
                         animateSquishSection(finalRow, 0, columns / 2);
                     }
                 }, 0.5f);
@@ -180,7 +180,7 @@ public class Grid {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
-                    	score+=5;
+                    	score+=25;
                         animateClearSection(finalRow, columns / 2, columns);
                     }
                 }, 0.5f);
