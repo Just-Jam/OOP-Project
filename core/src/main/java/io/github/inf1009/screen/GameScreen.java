@@ -164,7 +164,7 @@ public class GameScreen implements Screen {
         batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, gameWidth, worldHeight);
-        batch.draw(nextBlockBoard, game.GRID_COLUMNS, 6, 6, 8);
+        batch.draw(nextBlockBoard, game.GRID_COLUMNS, 6, 4, 8);
         game.font.draw(game.batch, ptest , (worldWidth-1.88f), (worldHeight-0.7f));
         batch.end();
 
