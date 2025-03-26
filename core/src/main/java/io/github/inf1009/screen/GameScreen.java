@@ -179,7 +179,7 @@ public class GameScreen implements Screen {
 
 
     private void drawNextBlocksPreview() {
-        hapeRenderer.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
+        shapeRenderer.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
 
         float previewX = gameWidth + 1.4f;
         float previewY = worldHeight - 4.3f;
