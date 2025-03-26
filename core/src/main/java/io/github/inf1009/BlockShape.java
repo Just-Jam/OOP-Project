@@ -94,10 +94,10 @@ public abstract class BlockShape {
     }
 
     public void drawNextBlocks(ShapeRenderer shapeRenderer, float offsetX, float offsetY) {
-        for (int row = 0; row < shape.length; row++) {
+        for (int row = 0; row < shape.length; row ++) {
             for (int col = 0; col < shape[0].length; col++) {
                 if (shape[row][col]) {
-                    shapeRenderer.rect(offsetX + col, offsetY - row, 1, 1);
+                    shapeRenderer.rect((2 * offsetX + col) /2 + 1.5f, (2 * offsetY - row) /2, 0.5f, 0.5f);
                 }
             }
         }

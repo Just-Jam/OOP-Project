@@ -21,6 +21,7 @@ public class GameOverScreen implements Screen {
     private TextureButton newGameButton;
     private TextureButton quitButton;
     private final int worldWidth;
+    private final int gameWidth;
     private final int worldHeight;
 
     private SceneManager sceneManager;
@@ -36,11 +37,12 @@ public class GameOverScreen implements Screen {
         stage = new Stage(viewportManager.getFitViewport());
         Gdx.input.setInputProcessor(stage);
 
-        worldWidth = game.GRID_COLUMNS;
+        worldWidth = game.TOTAL_COLUMNS;
         worldHeight = game.GRID_ROWS;
+        gameWidth = game.GRID_COLUMNS;
 
 //         Create button using reusable TextureButton class
-        newGameButton = new TextureButton("buttons/new_game_button.png", 4, 1, (float) worldWidth / 2, 6, new ClickListener() {
+        newGameButton = new TextureButton("buttons/new_game_button.png", 4, 1, (float) gameWidth / 2, 6, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 sceneManager.setScreen(new GameScreen(game));
@@ -49,7 +51,7 @@ public class GameOverScreen implements Screen {
             }
         });
 
-        quitButton = new TextureButton("buttons/quit_button.png", 4, 1, (float) worldWidth / 2, 5, new ClickListener() {
+        quitButton = new TextureButton("buttons/quit_button.png", 4, 1, (float) gameWidth / 2, 5, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit();
@@ -68,7 +70,7 @@ public class GameOverScreen implements Screen {
 
         game.batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         game.batch.begin();
-        game.batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
+        game.batch.draw(backgroundTexture, 0, 0, gameWidth, worldHeight);
         game.batch.end();
 
         stage.act(Gdx.graphics.getDeltaTime());

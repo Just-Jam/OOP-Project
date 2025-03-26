@@ -23,6 +23,7 @@ public class GameScreen implements Screen {
     private Grid grid;
     private Texture backgroundTexture;
     private Texture pausetexture;
+    private Texture nextBlockBoard;
 
     private float gameSpeed = 0.3f; //lower = faster
     private float timer = 0;
@@ -36,7 +37,7 @@ public class GameScreen implements Screen {
     private CharSequence ptest=String.valueOf(0);
     private Stage previewStage;
     private java.util.List<BlockShape> nextBlocks;
-    
+
     public GameScreen(final Tetris game) {
         this.game = game;
         this.sceneManager = game.sceneManager;
@@ -49,6 +50,7 @@ public class GameScreen implements Screen {
 
         backgroundTexture = new Texture("game_background.jpg");
         pausetexture= new Texture("game_pause.png");
+        nextBlockBoard = new Texture("next_block_board.png");
 
         grid = new Grid(gameWidth, worldHeight, game.getSoundManager());
         entityManager = new EntityManager(grid);
@@ -60,7 +62,7 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(inputManager);
 
         gameStateManager = new GameStateManager(game.getSoundManager());
-        
+
         previewStage = new Stage(new ScreenViewport());
         // Initialize the next-blocks queue.
         nextBlocks = new java.util.ArrayList<>();
@@ -121,36 +123,32 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(Color.NAVY);
 
         batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
-        
-        // Start drawing with the batch
         batch.begin();
-        
-        // Draw the background
-        batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
+        batch.draw(backgroundTexture, 0, 0, gameWidth, worldHeight);
+        batch.draw(nextBlockBoard, game.GRID_COLUMNS, 6, 6, 8);
         game.font.draw(game.batch, ptest , (worldWidth-1.88f), (worldHeight-0.7f));
-        // End the batch drawing
         batch.end();
-        
+
         // Draw the grid and current block
         grid.draw(shapeRenderer, viewportManager.getFitViewport());
-        
+
         entityManager.draw(shapeRenderer, batch);
         ptest=String.valueOf(grid.score);
         // Draw next blocks preview
         drawNextBlocksPreview();
     }
 
-    
+
     private void drawNextBlocksPreview() {
         shapeRenderer.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
 
         float previewX = gameWidth + 1;
         float previewY = worldHeight - 4;
-        
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         for (int i = 0; i < nextBlocks.size(); i++) {
             BlockShape previewBlock = nextBlocks.get(i);
-            float currentOffsetY = previewY - i * 4; // vertical spacing between next blocks
+            float currentOffsetY = previewY - i * 2; // vertical spacing between next blocks
 
             // Set the block color based on its type.
             if (previewBlock.getType() == BlockShape.BlockType.RECYCLABLE) {
@@ -162,7 +160,7 @@ public class GameScreen implements Screen {
             previewBlock.drawNextBlocks(shapeRenderer, previewX, currentOffsetY);
         }
         shapeRenderer.end();
-        
+
         // Restore the projection matrix to the game viewport.
         shapeRenderer.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
     }
@@ -183,7 +181,7 @@ public class GameScreen implements Screen {
 
         ScreenUtils.clear(Color.BLACK);
         batch.begin();
-        batch.draw(pausetexture, 0, 0, worldWidth, worldHeight);
+        batch.draw(pausetexture, 0, 0, gameWidth, worldHeight);
         batch.end();
     }
 

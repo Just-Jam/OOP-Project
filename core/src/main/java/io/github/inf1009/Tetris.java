@@ -24,7 +24,7 @@ public class Tetris extends Game {
     public final int GRID_COLUMNS = 10; //even number
     public final int GRID_ROWS  = 16;
     // Extra columns for next blocks
-    public final int EXTRA_COLUMNS = 4;
+    public final int EXTRA_COLUMNS = 6;
     public final int TOTAL_COLUMNS =  GRID_COLUMNS + EXTRA_COLUMNS;
 
     public void create() {
@@ -43,7 +43,7 @@ public class Tetris extends Game {
         sceneManager = new SceneManager(this);
         sceneManager.setScreen(new MainMenuScreen(this)); // Use SceneManager for screen transitions
     }
-    
+
     public SoundManager getSoundManager() {
         return soundManager;
     }

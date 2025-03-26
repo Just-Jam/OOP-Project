@@ -22,7 +22,7 @@ public class MainMenuScreen implements Screen {
     private Texture backgroundTexture;
     private Stage stage;
 
-    private int worldWidth, worldHeight;
+    private int worldWidth, worldHeight, gameWidth;
     private TextureButton playButton;
 
     private ViewportManager viewportManager;
@@ -38,6 +38,7 @@ public class MainMenuScreen implements Screen {
 
         worldWidth = game.GRID_COLUMNS;
         worldHeight = game.GRID_ROWS;
+        gameWidth = game.GRID_COLUMNS;
 
 //         Create button using reusable TextureButton class
         playButton = new TextureButton("buttons/play_button.png", 4, 1, (float) worldWidth / 2, 6.5f, new ClickListener() {
@@ -60,7 +61,7 @@ public class MainMenuScreen implements Screen {
 
         game.batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         game.batch.begin();
-        game.batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
+        game.batch.draw(backgroundTexture, 0, 0, gameWidth, worldHeight);
         game.batch.end();
 
         stage.act(Gdx.graphics.getDeltaTime());
