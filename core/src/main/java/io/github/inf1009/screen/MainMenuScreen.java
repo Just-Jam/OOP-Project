@@ -21,9 +21,10 @@ public class MainMenuScreen implements Screen {
     private Texture backgroundTexture;
     private Stage stage;
 
-    private int worldWidth, worldHeight, gameWidth;
+    private int worldWidth, worldHeight;
     private TextureButton playButton;
     private TextureButton creditButton;
+    private TextureButton howToPlayButton;
 
     private ViewportManager viewportManager;
 
@@ -38,10 +39,9 @@ public class MainMenuScreen implements Screen {
 
         worldWidth = game.GRID_COLUMNS;
         worldHeight = game.GRID_ROWS;
-        gameWidth = game.GRID_COLUMNS;
 
-        // Create the Play button
-        playButton = new TextureButton("buttons/play_button.png", 4, 1, (float) worldWidth / 2, 6.5f, new ClickListener() {
+        // Play button
+        playButton = new TextureButton("buttons/play_button.png", 4, 1, worldWidth / 2f, 7f, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 sceneManager.setScreen(new GameScreen(game));
@@ -51,20 +51,28 @@ public class MainMenuScreen implements Screen {
         });
         stage.addActor(playButton.getButton());
 
-        // Create the Credit button positioned right below the Play button
-        creditButton = new TextureButton("buttons/credits_button.png", 4, 1, (float) worldWidth / 2, 5.5f, new ClickListener() {
+        // Credit button
+        creditButton = new TextureButton("buttons/credits_button.png", 4, 1, worldWidth / 2f, 5.5f, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 sceneManager.setScreen(new CreditsScreen(game));
             }
         });
         stage.addActor(creditButton.getButton());
+
+        // How to Play button (newly added)
+        howToPlayButton = new TextureButton("buttons/howtoplay_button.png", 4, 1, worldWidth / 2f, 4f, new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                sceneManager.setScreen(new InstructionScreen(game));
+            }
+        });
+        stage.addActor(howToPlayButton.getButton());
     }
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(Color.BLACK);
-
         viewportManager.draw();
 
         game.batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
@@ -74,44 +82,16 @@ public class MainMenuScreen implements Screen {
 
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
-
-        // Example of handling key input for sound control
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-            sceneManager.menuMusic.play();
-        } 
-        else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            sceneManager.menuMusic.stop();
-        }
-//        // Alternatively, change screen on touch
-//        else if (Gdx.input.isTouched()) {
-//            sceneManager.setScreen(new GameScreen(game));
-//            sceneManager.backgroundMusic.play();
-//            sceneManager.menuMusic.stop();
-//        }
     }
 
-    @Override public void show() {
-    	
-    }
-    
-    @Override
-    public void resize(int width, int height) {
+    @Override public void show() {}
+    @Override public void resize(int width, int height) {
         viewportManager.resize(width, height);
         stage.getViewport().update(width, height, true);
     }
-    
-    @Override public void pause() { 
-    	
-    }
-    
-    @Override public void resume() { 
-    	
-    }
-    
-    @Override public void hide() { 
-    	
-    }
-    
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
     @Override public void dispose() {
         stage.dispose();
         backgroundTexture.dispose();
