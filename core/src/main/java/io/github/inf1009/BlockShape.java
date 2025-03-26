@@ -93,14 +93,18 @@ public abstract class BlockShape {
         }
     }
 
-    public void drawNextBlocks(ShapeRenderer shapeRenderer, float offsetX, float offsetY) {
+    public void drawNextBlocks(Batch batch, float offsetX, float offsetY) {
         for (int row = 0; row < shape.length; row ++) {
             for (int col = 0; col < shape[0].length; col++) {
                 if (shape[row][col]) {
-                    shapeRenderer.rect((2 * offsetX + col) /2 + 1.5f, (2 * offsetY - row) /2, 0.5f, 0.5f);
+                	blockSprite.setSize(0.8f, 0.8f);
+                	blockSprite.setPosition(offsetX + col * 0.5f, offsetY - row * 0.5f);
+                    blockSprite.draw(batch);
                 }
             }
         }
+        // Sets the blocks back to the original size when called
+        blockSprite.setSize(1f, 1f);
     }
 
     public void rotate(Grid grid) {
