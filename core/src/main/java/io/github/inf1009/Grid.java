@@ -10,9 +10,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import io.github.inf1009.manager.SoundManager;
 
 public class Grid {
-	public int score=0;
-    private final int columns;
-    //public int score=0;
+
     private int playerScore;
 	private final int columns;
     private final int rows;
@@ -181,7 +179,6 @@ public class Grid {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
-                    	score+=50;
                     	addToScore(5);
                         animateSquishSection(finalRow, 0, columns / 2);
                     }
@@ -199,7 +196,6 @@ public class Grid {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
-                    	score+=25;
                     	addToScore(5);
                         animateClearSection(finalRow, columns / 2, columns);
                     }
@@ -208,7 +204,8 @@ public class Grid {
         }
         if (clearedRows > 1) {
             int comboBonus = calculateComboBonus(clearedRows);
-            score += comboBonus;
+            addToScore(comboBonus);
+            //score += comboBonus; // edit to fit new scoring system
         }
     }
     /**

@@ -73,7 +73,7 @@ public class GameScreen implements Screen {
             nextBlocks.add(BlockFactory.createRandomBlock(gameWidth, worldHeight));
         }
         Gdx.input.setInputProcessor(inputManager);      
-        gameStateManager = new GameStateManager();
+        //gameStateManager = new GameStateManager();
     }
 
     @Override
@@ -81,10 +81,10 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-    	if (grid.getPlayerScore()>20) {
+    	if (grid.getPlayerScore()>50) {
     		gameSpeed = 0.15f;
     	}
-    	else if (grid.getPlayerScore()>10) {
+    	else if (grid.getPlayerScore()>30) {
     		gameSpeed = 0.2f;
     	}
     	else {
@@ -172,7 +172,7 @@ public class GameScreen implements Screen {
         grid.draw(shapeRenderer, viewportManager.getFitViewport());
 
         entityManager.draw(shapeRenderer, batch);
-        ptest=String.valueOf(grid.score);
+        ptest=String.valueOf(grid.getPlayerScore());
         // Draw next blocks preview
         drawNextBlocksPreview();
     }
@@ -202,7 +202,7 @@ public class GameScreen implements Screen {
 
         // Restore the projection matrix to the game viewport.
         shapeRenderer.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
-        entityManager.draw(shapeRenderer);
+        //entityManager.draw(shapeRenderer);
         ptest=String.valueOf(grid.getPlayerScore());
     }
 

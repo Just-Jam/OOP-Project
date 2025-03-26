@@ -48,8 +48,8 @@ public class GameOverScreen implements Screen {
         gameWidth = game.GRID_COLUMNS;
 
         
-        worldWidth = game.GRID_COLUMNS;
-        worldHeight = game.GRID_ROWS;
+        //worldWidth = game.GRID_COLUMNS;
+        //worldHeight = game.GRID_ROWS;
         
 //         Create button using reusable TextureButton class
         newGameButton = new TextureButton("buttons/new_game_button.png", 4, 1, (float) gameWidth / 2, 6, new ClickListener() {
