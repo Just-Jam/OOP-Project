@@ -56,8 +56,7 @@ public class GameOverScreen implements Screen {
         ScoreManager scoreManager = new ScoreManager();
         topScores = scoreManager.getHighScores();
         
-        //worldWidth = game.GRID_COLUMNS;
-        //worldHeight = game.GRID_ROWS;
+
         
 //         Create button using reusable TextureButton class
         newGameButton = new TextureButton("buttons/new_game_button.png", 4, 1, (float) gameWidth / 2, 6, new ClickListener() {
