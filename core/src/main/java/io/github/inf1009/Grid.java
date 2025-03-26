@@ -12,6 +12,9 @@ import io.github.inf1009.manager.SoundManager;
 public class Grid {
 	public int score=0;
     private final int columns;
+    //public int score=0;
+    private int playerScore;
+	private final int columns;
     private final int rows;
     private BlockShape.BlockType[][] gridMatrix;
     // Squish factors are used for recyclable blocks.
@@ -38,6 +41,14 @@ public class Grid {
                 isClearing[col][row] = false;
             }
         }
+    }
+    
+    public int getPlayerScore() {
+        return playerScore;
+    }
+
+    public void addToScore(int value) {
+        playerScore += value;
     }
 
     public int getRows() {
@@ -171,6 +182,7 @@ public class Grid {
                     @Override
                     public void run() {
                     	score+=50;
+                    	addToScore(5);
                         animateSquishSection(finalRow, 0, columns / 2);
                     }
                 }, 0.5f);
@@ -188,6 +200,7 @@ public class Grid {
                     @Override
                     public void run() {
                     	score+=25;
+                    	addToScore(5);
                         animateClearSection(finalRow, columns / 2, columns);
                     }
                 }, 0.5f);
@@ -384,6 +397,9 @@ public class Grid {
         public boolean isFinished() {
             return timeElapsed >= duration;
         }
+        
+
+        
 
         public void draw(ShapeRenderer shapeRenderer) {
             // Fade out effect: alpha decreases as time passes.

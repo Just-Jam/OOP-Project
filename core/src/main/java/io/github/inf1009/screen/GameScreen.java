@@ -1,5 +1,7 @@
 package io.github.inf1009.screen;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -37,6 +39,7 @@ public class GameScreen implements Screen {
     private CharSequence ptest=String.valueOf(0);
     private Stage previewStage;
     private java.util.List<BlockShape> nextBlocks;
+    ScoreManager scoreManager = new ScoreManager();
 
     public GameScreen(final Tetris game) {
         this.game = game;
@@ -69,6 +72,8 @@ public class GameScreen implements Screen {
         for (int i = 0; i < 3; i++) {
             nextBlocks.add(BlockFactory.createRandomBlock(gameWidth, worldHeight));
         }
+        Gdx.input.setInputProcessor(inputManager);      
+        gameStateManager = new GameStateManager();
     }
 
     @Override
@@ -76,6 +81,15 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+    	if (grid.getPlayerScore()>20) {
+    		gameSpeed = 0.15f;
+    	}
+    	else if (grid.getPlayerScore()>10) {
+    		gameSpeed = 0.2f;
+    	}
+    	else {
+    		gameSpeed = 0.3f;
+    	}
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -105,10 +119,35 @@ public class GameScreen implements Screen {
         handleGameOver();
     }
     private void handleGameOver() {
-        if (gameStateManager.isGameOver() || Gdx.input.isKeyJustPressed(Input.Keys.O)) {
-            sceneManager.setScreen(new GameOverScreen(game));
-            sceneManager.backgroundMusic.stop();
+        if (gameStateManager.isGameOver(grid) || Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+        	//Initialize the boolean flag to allow this code to be printed just once
+        	boolean scoresPrinted = false;	
+			
+        	if (!scoresPrinted) {
+                int finalScore = grid.getPlayerScore(); //Get latest visible score
+                //For debugging the output
+                //System.out.println("DEBUG: Final Score at Game Over = " + finalScore);
+
+                //Adding score to database (Name, score)
+                scoreManager.addScore("Player1", finalScore);
+
+                List<ScoreEntry> topScores = scoreManager.getHighScores();
+                for (int i = 0; i < topScores.size(); i++) {
+                    ScoreEntry entry = topScores.get(i);
+                    //Change this to print method in game screen to print on screen
+                    System.out.println((i + 1) + ". " + entry.name + " - " + entry.score);
+                }
+                //boolean flag to stop the code above from looping
+                scoresPrinted = true;
+                sceneManager.setScreen(new GameOverScreen(game));
+                sceneManager.backgroundMusic.stop();
+                /* Only use this for testing 
+                scoreManager.clearScores(); //clear old score for testing fresh start
+                scoreManager.addScore("Player1", finalScore);
+                */
+            }
         }
+        
     }
 
     public void logic() {
@@ -163,6 +202,8 @@ public class GameScreen implements Screen {
 
         // Restore the projection matrix to the game viewport.
         shapeRenderer.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
+        entityManager.draw(shapeRenderer);
+        ptest=String.valueOf(grid.getPlayerScore());
     }
 
 

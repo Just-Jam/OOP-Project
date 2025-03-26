@@ -9,6 +9,8 @@ public class FallingBlock extends BaseEntity {
 
     public void update(float delta) {
         move(0, -1, delta); // Move down based on delta time
+        
+        
     }
 
     public void draw(ShapeRenderer shapeRenderer) {

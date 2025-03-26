@@ -1,5 +1,7 @@
 package io.github.inf1009.screen;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -9,9 +11,13 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+
+import io.github.inf1009.Grid;
+import io.github.inf1009.ScoreEntry;
 import io.github.inf1009.Tetris;
 import io.github.inf1009.TextureButton;
 import io.github.inf1009.manager.SceneManager;
+import io.github.inf1009.manager.ScoreManager;
 import io.github.inf1009.manager.ViewportManager;
 
 public class GameOverScreen implements Screen {
@@ -41,6 +47,10 @@ public class GameOverScreen implements Screen {
         worldHeight = game.GRID_ROWS;
         gameWidth = game.GRID_COLUMNS;
 
+        
+        worldWidth = game.GRID_COLUMNS;
+        worldHeight = game.GRID_ROWS;
+        
 //         Create button using reusable TextureButton class
         newGameButton = new TextureButton("buttons/new_game_button.png", 4, 1, (float) gameWidth / 2, 6, new ClickListener() {
             @Override
@@ -65,8 +75,8 @@ public class GameOverScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(Color.BLACK);
-
-       viewportManager.draw();
+        
+        viewportManager.draw();
 
         game.batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         game.batch.begin();
@@ -102,6 +112,7 @@ public class GameOverScreen implements Screen {
     @Override
     public void hide() {
     }
+    
 
     @Override
     public void dispose() {
