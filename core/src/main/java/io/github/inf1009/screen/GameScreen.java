@@ -26,7 +26,7 @@ public class GameScreen implements Screen {
 
     private float gameSpeed = 0.3f; //lower = faster
     private float timer = 0;
-    private int worldWidth, worldHeight;
+    private int worldWidth, worldHeight, gameWidth;
 
     private ViewportManager viewportManager;
     private MovementManager movementManager;
@@ -43,13 +43,14 @@ public class GameScreen implements Screen {
         this.shapeRenderer = new ShapeRenderer();
         this.batch = game.batch;
 
-        worldWidth = game.GRID_COLUMNS;
+        worldWidth = game.TOTAL_COLUMNS;
         worldHeight = game.GRID_ROWS;
+        gameWidth = game.GRID_COLUMNS;
 
         backgroundTexture = new Texture("game_background.jpg");
         pausetexture= new Texture("game_pause.png");
 
-        grid = new Grid(worldWidth, worldHeight, game.getSoundManager());
+        grid = new Grid(gameWidth, worldHeight, game.getSoundManager());
         entityManager = new EntityManager(grid);
         entityManager.spawnNewBlock();
 
@@ -64,7 +65,7 @@ public class GameScreen implements Screen {
         // Initialize the next-blocks queue.
         nextBlocks = new java.util.ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            nextBlocks.add(BlockFactory.createRandomBlock(worldWidth, worldHeight));
+            nextBlocks.add(BlockFactory.createRandomBlock(gameWidth, worldHeight));
         }
     }
 
@@ -127,33 +128,28 @@ public class GameScreen implements Screen {
         // Draw the background
         batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
         
-        // Draw the current block using the batch
-        entityManager.draw(shapeRenderer, batch);
-        
         // End the batch drawing
         batch.end();
-
-        // Draw grid, score, and next blocks preview
+        
+        // Draw the grid and current block
         grid.draw(shapeRenderer, viewportManager.getFitViewport());
-        ptest = String.valueOf(grid.score);
+        entityManager.draw(shapeRenderer, batch);
+        
+        // Draw next blocks preview
         drawNextBlocksPreview();
     }
 
     
     private void drawNextBlocksPreview() {
-        // Switch to the UI stage's camera (which uses screen coordinates)
-        shapeRenderer.setProjectionMatrix(previewStage.getCamera().combined);
-        
-        // Define the preview area in screen coordinates.
-        // For example, we want the preview area to be in the right 200 pixels.
-        float previewX = Gdx.graphics.getWidth() - 180; // adjust as needed
-        float previewY = Gdx.graphics.getHeight() - 100;  // adjust as needed
-        float cellSize = 20;
+        shapeRenderer.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
+
+        float previewX = gameWidth + 1;
+        float previewY = worldHeight - 4;
         
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         for (int i = 0; i < nextBlocks.size(); i++) {
             BlockShape previewBlock = nextBlocks.get(i);
-            float currentOffsetY = previewY - i * (cellSize * 4); // vertical spacing between previews
+            float currentOffsetY = previewY - i * 4; // vertical spacing between next blocks
 
             // Set the block color based on its type.
             if (previewBlock.getType() == BlockShape.BlockType.RECYCLABLE) {
@@ -162,7 +158,7 @@ public class GameScreen implements Screen {
                 shapeRenderer.setColor(Color.RED);
             }
          // Draw the block with scaling
-            previewBlock.drawNextBlocks(shapeRenderer, previewX, currentOffsetY, cellSize);
+            previewBlock.drawNextBlocks(shapeRenderer, previewX, currentOffsetY);
         }
         shapeRenderer.end();
         
@@ -201,4 +197,6 @@ public class GameScreen implements Screen {
         shapeRenderer.dispose();
     }
 }
+
+
 
