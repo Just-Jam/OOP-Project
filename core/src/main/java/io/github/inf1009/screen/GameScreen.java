@@ -82,11 +82,14 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-    	if (grid.getPlayerScore()>50) {
+    	if (grid.getPlayerScore()>3000) {
     		gameSpeed = 0.15f;
     	}
-    	else if (grid.getPlayerScore()>30) {
+    	else if (grid.getPlayerScore()>2000) {
     		gameSpeed = 0.2f;
+    	}
+    	else if (grid.getPlayerScore()>1000) {
+    		gameSpeed = 0.25f;
     	}
     	else {
     		gameSpeed = 0.3f;
