@@ -5,8 +5,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.inf1009.Tetris;
 import io.github.inf1009.TextureButton;
@@ -21,10 +24,10 @@ public class MainMenuScreen implements Screen {
     private Texture backgroundTexture;
     private Stage stage;
 
-    private int worldWidth, worldHeight;
+    private int worldWidth, worldHeight, gameWidth;
     private TextureButton playButton;
     private TextureButton creditButton;
-    private TextureButton howToPlayButton;
+    private TextField nameField;
 
     private ViewportManager viewportManager;
 
@@ -39,20 +42,23 @@ public class MainMenuScreen implements Screen {
 
         worldWidth = game.GRID_COLUMNS;
         worldHeight = game.GRID_ROWS;
+        gameWidth = game.GRID_COLUMNS;
 
-        // Play button
-        playButton = new TextureButton("buttons/play_button.png", 4, 1, worldWidth / 2f, 7f, new ClickListener() {
+        // Create the Play button
+        playButton = new TextureButton("buttons/play_button.png", 4, 1, (float) worldWidth / 2, 6.5f, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                sceneManager.setScreen(new GameScreen(game));
+                String playerName = nameField.getText().trim();
+                System.out.println("Player name: " + playerName);
+                sceneManager.setScreen(new GameScreen(game, playerName));
                 sceneManager.backgroundMusic.play();
                 sceneManager.menuMusic.stop();
             }
         });
         stage.addActor(playButton.getButton());
 
-        // Credit button
-        creditButton = new TextureButton("buttons/credits_button.png", 4, 1, worldWidth / 2f, 5.5f, new ClickListener() {
+        // Create the Credit button positioned right below the Play button
+        creditButton = new TextureButton("buttons/credits_button.png", 4, 1, (float) worldWidth / 2, 5.5f, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 sceneManager.setScreen(new CreditsScreen(game));
@@ -60,19 +66,24 @@ public class MainMenuScreen implements Screen {
         });
         stage.addActor(creditButton.getButton());
 
-        // How to Play button (newly added)
-        howToPlayButton = new TextureButton("buttons/howtoplay_button.png", 4, 1, worldWidth / 2f, 4f, new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                sceneManager.setScreen(new InstructionScreen(game));
-            }
-        });
-        stage.addActor(howToPlayButton.getButton());
+        //Create the Name field text box thing below credit
+
+        TextField.TextFieldStyle style = new TextField.TextFieldStyle();
+        style.font = game.font;
+        style.fontColor = Color.BLACK;
+
+        nameField = new TextField("", style);  // custom style with smaller font
+        nameField.setMessageText("Enter your name");
+        nameField.setSize(4f, 0.5f);
+        nameField.setPosition(3.8f, 4.5f);
+        stage.addActor(nameField);
+
     }
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(Color.BLACK);
+
         viewportManager.draw();
 
         game.batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
@@ -82,16 +93,38 @@ public class MainMenuScreen implements Screen {
 
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
+
+        // Example of handling key input for sound control
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            sceneManager.menuMusic.play();
+        }
+        else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            sceneManager.menuMusic.stop();
+        }
     }
 
-    @Override public void show() {}
-    @Override public void resize(int width, int height) {
+    @Override public void show() {
+
+    }
+
+    @Override
+    public void resize(int width, int height) {
         viewportManager.resize(width, height);
         stage.getViewport().update(width, height, true);
     }
-    @Override public void pause() {}
-    @Override public void resume() {}
-    @Override public void hide() {}
+
+    @Override public void pause() {
+
+    }
+
+    @Override public void resume() {
+
+    }
+
+    @Override public void hide() {
+
+    }
+
     @Override public void dispose() {
         stage.dispose();
         backgroundTexture.dispose();
