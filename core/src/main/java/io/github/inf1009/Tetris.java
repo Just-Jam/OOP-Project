@@ -24,7 +24,7 @@ public class Tetris extends Game {
     public final int GRID_COLUMNS = 10; //even number
     public final int GRID_ROWS  = 16;
     // Extra columns for next blocks
-    public final int EXTRA_COLUMNS = 6;
+    public final int EXTRA_COLUMNS = 5;
     public final int TOTAL_COLUMNS =  GRID_COLUMNS + EXTRA_COLUMNS;
 
     public void create() {
