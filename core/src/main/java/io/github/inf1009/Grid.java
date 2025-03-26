@@ -204,7 +204,12 @@ public class Grid {
         }
         if (clearedRows > 1) {
             int comboBonus = calculateComboBonus(clearedRows);
+            System.out.println("DEBUG: ClearedRow " + clearedRows);
+            System.out.println("DEBUG: Combo " + comboBonus);
+            
             addToScore(comboBonus);
+            System.out.println("DEBUG: ClearedRow " + getPlayerScore());
+            
             //score += comboBonus; // edit to fit new scoring system
         }
     }
