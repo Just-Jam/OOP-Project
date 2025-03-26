@@ -85,20 +85,19 @@ public abstract class BlockShape {
                 if (shape[row][col]) {
                     // For each 1x1 block that is part of the shape, draw the image
                     blockSprite.setPosition(gridX + col, gridY - row);  // Set the position for each 1x1 block
+                    batch.begin();
                     blockSprite.draw(batch);  // Draw the image for the current 1x1 block
+                    batch.end();
                 }
             }
         }
     }
 
-    public void drawNextBlocks(ShapeRenderer shapeRenderer, float offsetX, float offsetY, float cellSize) {
+    public void drawNextBlocks(ShapeRenderer shapeRenderer, float offsetX, float offsetY) {
         for (int row = 0; row < shape.length; row++) {
             for (int col = 0; col < shape[0].length; col++) {
                 if (shape[row][col]) {
-                    // Each cell is cellSize x cellSize in screen coordinates
-                    float drawX = offsetX + col * cellSize;
-                    float drawY = offsetY - row * cellSize;
-                    shapeRenderer.rect(drawX, drawY, cellSize, cellSize);
+                    shapeRenderer.rect(offsetX + col, offsetY - row, 1, 1);
                 }
             }
         }
