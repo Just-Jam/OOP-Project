@@ -5,8 +5,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.inf1009.Tetris;
 import io.github.inf1009.TextureButton;
@@ -24,6 +27,7 @@ public class MainMenuScreen implements Screen {
     private int worldWidth, worldHeight, gameWidth;
     private TextureButton playButton;
     private TextureButton creditButton;
+    private TextField nameField;
 
     private ViewportManager viewportManager;
 
@@ -44,7 +48,9 @@ public class MainMenuScreen implements Screen {
         playButton = new TextureButton("buttons/play_button.png", 4, 1, (float) worldWidth / 2, 6.5f, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                sceneManager.setScreen(new GameScreen(game));
+            	String playerName = nameField.getText().trim();
+            	System.out.println("Player name: " + playerName);
+            	sceneManager.setScreen(new GameScreen(game, playerName));
                 sceneManager.backgroundMusic.play();
                 sceneManager.menuMusic.stop();
             }
@@ -59,7 +65,20 @@ public class MainMenuScreen implements Screen {
             }
         });
         stage.addActor(creditButton.getButton());
-    }
+        
+     //Create the Name field text box thing below credit
+
+        TextField.TextFieldStyle style = new TextField.TextFieldStyle();
+        style.font = game.font;
+        style.fontColor = Color.BLACK;
+
+        nameField = new TextField("", style);  // custom style with smaller font
+        nameField.setMessageText("Enter your name");
+        nameField.setSize(4f, 0.5f);
+        nameField.setPosition(3.8f, 4.5f);
+        stage.addActor(nameField);
+        
+}
 
     @Override
     public void render(float delta) {
@@ -82,12 +101,6 @@ public class MainMenuScreen implements Screen {
         else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             sceneManager.menuMusic.stop();
         }
-//        // Alternatively, change screen on touch
-//        else if (Gdx.input.isTouched()) {
-//            sceneManager.setScreen(new GameScreen(game));
-//            sceneManager.backgroundMusic.play();
-//            sceneManager.menuMusic.stop();
-//        }
     }
 
     @Override public void show() {

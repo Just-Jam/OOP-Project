@@ -30,6 +30,7 @@ public class GameScreen implements Screen {
     private float gameSpeed = 0.3f; //lower = faster
     private float timer = 0;
     private int worldWidth, worldHeight, gameWidth;
+    private String player_name;
 
     private ViewportManager viewportManager;
     private MovementManager movementManager;
@@ -41,7 +42,8 @@ public class GameScreen implements Screen {
     private java.util.List<BlockShape> nextBlocks;
     ScoreManager scoreManager = new ScoreManager();
 
-    public GameScreen(final Tetris game) {
+    public GameScreen(final Tetris game, String name) {
+    	player_name=name;
         this.game = game;
         this.sceneManager = game.sceneManager;
         this.shapeRenderer = new ShapeRenderer();
@@ -121,7 +123,7 @@ public class GameScreen implements Screen {
                 //System.out.println("DEBUG: Final Score at Game Over = " + finalScore);
 
                 //Adding score to database (Name, score)
-                scoreManager.addScore("Player1", finalScore);
+                scoreManager.addScore(player_name, finalScore);
 
                 List<ScoreEntry> topScores = scoreManager.getHighScores();
                 for (int i = 0; i < topScores.size(); i++) {
@@ -131,7 +133,7 @@ public class GameScreen implements Screen {
                 }
                 //boolean flag to stop the code above from looping
                 scoresPrinted = true;
-                sceneManager.setScreen(new GameOverScreen(game));
+                sceneManager.setScreen(new GameOverScreen(game,player_name));
                 sceneManager.backgroundMusic.stop();
                        
                 /* Only use this for testing 
