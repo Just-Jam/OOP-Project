@@ -109,7 +109,7 @@ public class Grid {
         }
         shapeRenderer.end();
     }
-
+    
     /**
      * Checks each row. For the left half (assumed RECYCLABLE) it uses the squish animation;
      * for the right half (assumed NON RECYCLABLE) it uses the sequential clearing animation.
@@ -187,6 +187,25 @@ public class Grid {
             }
         }
     }
+    /**
+     * Applies gravity to a portion of the grid, pulling blocks down
+     * so there are no gaps underneath them. Only affects columns in [startCol, endCol).
+     */
+    private void applyGravityToSection(int startCol, int endCol) {
+        for (int col = startCol; col < endCol; col++) {
+            int writeRow = 0;  // Next "empty" row from the bottom
+            for (int readRow = 0; readRow < rows; readRow++) {
+                if (gridMatrix[col][readRow] != null) {
+                    if (writeRow != readRow) {
+                        // Move block down
+                        gridMatrix[col][writeRow] = gridMatrix[col][readRow];
+                        gridMatrix[col][readRow] = null;
+                    }
+                    writeRow++;
+                }
+            }
+        }
+    }
 
     /**
      * Animates the squish effect for a section of a row (for recyclable blocks).
@@ -213,6 +232,8 @@ public class Grid {
                     squishFactors[col][rows - 1] = 1.0f;
                     isClearing[col][rows - 1] = false;
                 }
+             // Apply gravity only to the left section (columns 0 to columns/2)
+                applyGravityToSection(0, columns / 2);
             }
         }, 0.7f); // Delay slightly longer than the squish animation duration.
     }
@@ -243,6 +264,7 @@ public class Grid {
                 squishFactors[col][row] = 1.0f;
                 isClearing[col][row] = false;
             }
+            
         }, (steps + 1) * stepDuration);
     }
 
@@ -282,6 +304,8 @@ public class Grid {
                     gridMatrix[col][rows - 1] = null;
                     isClearing[col][rows - 1] = false;
                 }
+             // Apply gravity only to the right section (columns columns/2 to columns)
+                applyGravityToSection(columns / 2, columns);
             }
         }, numCells * cellDelay);
     }
