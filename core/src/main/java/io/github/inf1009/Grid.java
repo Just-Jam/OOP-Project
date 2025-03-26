@@ -72,7 +72,7 @@ public class Grid {
     
     private int calculateComboBonus(int clearedRows) {
         // For example, award 100 extra points for each additional clear beyond the first.
-        return ((clearedRows - 1)/8) * 100;
+        return (clearedRows >= 2) ? 100 : 0;
     }
 
     /**
@@ -131,17 +131,15 @@ public class Grid {
      * The fire animation is added only for the non recyclable (right) section.
      */
     public void clearRow() {
-    	int clearedRows = 0;
-    	boolean rowCleared = false;
+        int clearedRows = 0;
 
-    	
         for (int row = 0; row < rows; row++) {
             boolean leftSideFull = true;
             boolean rightSideFull = true;
             BlockShape.BlockType leftSideType = null;
             BlockShape.BlockType rightSideType = null;
 
-            // Check the left (green/RECYCLABLE) section.
+            // Check left (RECYCLABLE)
             for (int col = 0; col < columns / 2; col++) {
                 if (gridMatrix[col][row] == null) {
                     leftSideFull = false;
@@ -156,7 +154,7 @@ public class Grid {
                 }
             }
 
-            // Check the right (red/NON RECYCLABLE) section.
+            // Check right (UNRECYCLABLE)
             for (int col = columns / 2; col < columns; col++) {
                 if (gridMatrix[col][row] == null) {
                     rightSideFull = false;
@@ -171,9 +169,10 @@ public class Grid {
                 }
             }
 
-            // For recyclable blocks, mark cells as clearing and use the squish animation.
+            // Handle RECYCLABLE row clear
             if (leftSideFull && leftSideType == BlockShape.BlockType.RECYCLABLE) {
-            	rowCleared = true;
+                clearedRows++;
+                addToScore(50); // Add immediately
                 for (int col = 0; col < columns / 2; col++) {
                     isClearing[col][row] = true;
                 }
@@ -182,15 +181,15 @@ public class Grid {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
-                    	addToScore(50);
                         animateSquishSection(finalRow, 0, columns / 2);
                     }
                 }, 0.5f);
             }
 
-            // For non recyclable blocks, mark cells as clearing, add fire animation, and use the sequential clearing animation.
+            // Handle UNRECYCLABLE row clear
             if (rightSideFull && rightSideType == BlockShape.BlockType.UNRECYCLABLE) {
-            	rowCleared = true;
+                clearedRows++;
+                addToScore(25); // Add immediately
                 for (int col = columns / 2; col < columns; col++) {
                     isClearing[col][row] = true;
                 }
@@ -200,22 +199,18 @@ public class Grid {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
-                    	addToScore(25);
                         animateClearSection(finalRow, columns / 2, columns);
                     }
                 }, 0.5f);
             }
-            if (rowCleared) {
-                clearedRows++; //adds the logic of clearedRows to account for multiple row clear
-            }
         }
-        if (clearedRows > 1) {
-            int comboBonus = calculateComboBonus(clearedRows);
-            addToScore(comboBonus);
-            //System.out.println("DEBUG: ClearedRow " + getPlayerScore());
-            
+
+        // Apply combo bonus if 2 or more rows cleared
+        if (clearedRows >= 2) {
+            addToScore(100);
         }
     }
+
     /**
      * Applies gravity to a portion of the grid, pulling blocks down
      * so there are no gaps underneath them. Only affects columns in [startCol, endCol).
