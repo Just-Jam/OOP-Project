@@ -24,8 +24,8 @@ public class GameScreen implements Screen {
     private SpriteBatch batch;
     private Grid grid;
     private Texture backgroundTexture;
-    private Texture pausetexture;
     private Texture nextBlockBoard;
+    private Texture ScoreBoard;
 
     private float gameSpeed = 0.3f; //lower = faster
     private float timer = 0;
@@ -39,9 +39,11 @@ public class GameScreen implements Screen {
     private CharSequence ptest=String.valueOf(0);
     private Stage previewStage;
     private java.util.List<BlockShape> nextBlocks;
+    private String player_name;
     ScoreManager scoreManager = new ScoreManager();
 
-    public GameScreen(final Tetris game) {
+    public GameScreen(final Tetris game, String name) {
+    	player_name = name;
         this.game = game;
         this.sceneManager = game.sceneManager;
         this.shapeRenderer = new ShapeRenderer();
@@ -51,8 +53,9 @@ public class GameScreen implements Screen {
         worldHeight = game.GRID_ROWS;
         gameWidth = game.GRID_COLUMNS;
 
-        backgroundTexture = new Texture("game_background.jpg");
-        pausetexture= new Texture("game_pause.png");
+        ScoreBoard = new Texture("ScoreBoard.png");
+        backgroundTexture = new Texture("GameScreen.png");
+
         nextBlockBoard = new Texture("next_block_board.png");
 
         grid = new Grid(gameWidth, worldHeight, game.getSoundManager());
@@ -70,16 +73,24 @@ public class GameScreen implements Screen {
         nextBlocks = new java.util.ArrayList<>();
         for (int i = 0; i < 3; i++) {
             nextBlocks.add(BlockFactory.createRandomBlock(gameWidth, worldHeight));
-        }
-        Gdx.input.setInputProcessor(inputManager);      
+        }    
         //gameStateManager = new GameStateManager();
     }
 
     @Override
-    public void show() {}
+    public void show() {
+    	Gdx.input.setInputProcessor(inputManager); // Resume input control
+    	sceneManager.backgroundMusic.play();  
+    }
 
-    @Override
+    @Override 
     public void render(float delta) {
+     // Check if the pause key has been pressed 
+    	if (inputManager.gamepause) { 
+    	    inputManager.gamepause = false;
+    	    sceneManager.pushScreen(new PauseScreen(game, this, inputManager));
+    	    return;
+    	}
     	if (grid.getPlayerScore()>3000) {
     		gameSpeed = 0.15f;
     	}
@@ -124,7 +135,7 @@ public class GameScreen implements Screen {
                 //System.out.println("DEBUG: Final Score at Game Over = " + finalScore);
 
                 //Adding score to database (Name, score)
-                scoreManager.addScore("Player1", finalScore);
+                scoreManager.addScore("player_name", finalScore);
 
                 List<ScoreEntry> topScores = scoreManager.getHighScores();
                 for (int i = 0; i < topScores.size(); i++) {
@@ -134,7 +145,7 @@ public class GameScreen implements Screen {
                 }
                 //boolean flag to stop the code above from looping
                 scoresPrinted = true;
-                sceneManager.setScreen(new GameOverScreen(game));
+                sceneManager.setScreen(new GameOverScreen(game, player_name));
                 sceneManager.backgroundMusic.stop();
                        
                 /* Only use this for testing 
@@ -160,8 +171,9 @@ public class GameScreen implements Screen {
         batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, gameWidth, worldHeight);
+        batch.draw(ScoreBoard, game.GRID_COLUMNS, 14, 4, 2);
         batch.draw(nextBlockBoard, game.GRID_COLUMNS, 6, 4, 8);
-        game.font.draw(game.batch, ptest , (worldWidth-1.88f), (worldHeight-0.7f));
+        game.font.draw(game.batch, ptest , (worldWidth-2.4f), (worldHeight-0.77f));
         batch.end();
 
         // Draw the grid and current block
@@ -201,18 +213,12 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
-    	timer=0;
-    	sceneManager.backgroundMusic.pause();
-
-        ScreenUtils.clear(Color.BLACK);
-        batch.begin();
-        batch.draw(pausetexture, 0, 0, gameWidth, worldHeight);
-        batch.end();
+    	
     }
 
     @Override
     public void resume() {
-    	sceneManager.backgroundMusic.play();
+    	
     }
 
     @Override

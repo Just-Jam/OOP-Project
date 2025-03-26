@@ -30,6 +30,7 @@ public class GameOverScreen implements Screen {
     private final int worldWidth;
     private final int gameWidth;
     private final int worldHeight;
+    private String player_name;
 
     private SceneManager sceneManager;
     private ViewportManager viewportManager;
@@ -37,7 +38,8 @@ public class GameOverScreen implements Screen {
     private BitmapFont font;
     private List<ScoreEntry> topScores;
 
-    public GameOverScreen(final Tetris game) {
+    public GameOverScreen(final Tetris game, String player_name) {
+    	this.player_name=player_name;
         this.game = game;
         this.sceneManager = game.sceneManager;
         viewportManager = game.viewportManager;
@@ -54,14 +56,11 @@ public class GameOverScreen implements Screen {
         ScoreManager scoreManager = new ScoreManager();
         topScores = scoreManager.getHighScores();
         
-        //worldWidth = game.GRID_COLUMNS;
-        //worldHeight = game.GRID_ROWS;
-        
 //         Create button using reusable TextureButton class
         newGameButton = new TextureButton("buttons/new_game_button.png", 4, 1, (float) gameWidth / 2, 6, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                sceneManager.setScreen(new GameScreen(game));
+                sceneManager.setScreen(new GameScreen(game, player_name));
                 sceneManager.backgroundMusic.play();
                 sceneManager.menuMusic.stop();
             }
@@ -87,7 +86,7 @@ public class GameOverScreen implements Screen {
         game.batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         game.batch.begin();
         game.batch.draw(backgroundTexture, 0, 0, gameWidth, worldHeight);
-        // Position leaderboard in top-right corner (adjust as needed)
+        //Position of the leaderboard
         float leaderboardX = 5f;
         float leaderboardY = 8.8f;
         // X5 Y8.8 Mid
