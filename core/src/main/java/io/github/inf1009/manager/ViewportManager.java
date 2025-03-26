@@ -6,14 +6,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class ViewportManager {
     private FitViewport fitViewport;
-    private int gameWidth, gameHeight, previewWidth;
 
-    public ViewportManager (int gameWidth, int gameHeight, int previewWidth) {
-        this.gameWidth = gameWidth;
-        this.gameHeight = gameHeight;
-        this.previewWidth = previewWidth;
-        // Total width = gameWidth (game area) + previewWidth (preview area)
-        fitViewport = new FitViewport(gameWidth + previewWidth, gameHeight);
+    public ViewportManager (int width, int height) {
+        fitViewport = new FitViewport(width, height);
     }
 
     public FitViewport getFitViewport() {
