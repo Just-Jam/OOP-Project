@@ -13,7 +13,7 @@ import java.util.List;
 public class ScoreManager {
     private static final String PREFS_NAME = "MyGamePrefs";
     private static final String SCORES_KEY = "scoreList";
-    private static final int MAX_SCORES = 5;
+    private static final int MAX_SCORES = 4;
 
     private Preferences prefs;
     private Json json;
