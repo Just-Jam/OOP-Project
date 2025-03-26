@@ -72,7 +72,7 @@ public class Grid {
     
     private int calculateComboBonus(int clearedRows) {
         // For example, award 100 extra points for each additional clear beyond the first.
-        return (clearedRows - 1) * 100;
+        return ((clearedRows - 1)/8) * 100;
     }
 
     /**
@@ -132,6 +132,8 @@ public class Grid {
      */
     public void clearRow() {
     	int clearedRows = 0;
+    	boolean rowCleared = false;
+
     	
         for (int row = 0; row < rows; row++) {
             boolean leftSideFull = true;
@@ -171,6 +173,7 @@ public class Grid {
 
             // For recyclable blocks, mark cells as clearing and use the squish animation.
             if (leftSideFull && leftSideType == BlockShape.BlockType.RECYCLABLE) {
+            	rowCleared = true;
                 for (int col = 0; col < columns / 2; col++) {
                     isClearing[col][row] = true;
                 }
@@ -179,7 +182,7 @@ public class Grid {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
-                    	addToScore(5);
+                    	addToScore(50);
                         animateSquishSection(finalRow, 0, columns / 2);
                     }
                 }, 0.5f);
@@ -187,6 +190,7 @@ public class Grid {
 
             // For non recyclable blocks, mark cells as clearing, add fire animation, and use the sequential clearing animation.
             if (rightSideFull && rightSideType == BlockShape.BlockType.UNRECYCLABLE) {
+            	rowCleared = true;
                 for (int col = columns / 2; col < columns; col++) {
                     isClearing[col][row] = true;
                 }
@@ -196,21 +200,20 @@ public class Grid {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
-                    	addToScore(5);
+                    	addToScore(25);
                         animateClearSection(finalRow, columns / 2, columns);
                     }
                 }, 0.5f);
             }
+            if (rowCleared) {
+                clearedRows++; //adds the logic of clearedRows to account for multiple row clear
+            }
         }
         if (clearedRows > 1) {
             int comboBonus = calculateComboBonus(clearedRows);
-            System.out.println("DEBUG: ClearedRow " + clearedRows);
-            System.out.println("DEBUG: Combo " + comboBonus);
-            
             addToScore(comboBonus);
-            System.out.println("DEBUG: ClearedRow " + getPlayerScore());
+            //System.out.println("DEBUG: ClearedRow " + getPlayerScore());
             
-            //score += comboBonus; // edit to fit new scoring system
         }
     }
     /**

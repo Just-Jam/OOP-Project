@@ -141,6 +141,7 @@ public class GameScreen implements Screen {
                 scoresPrinted = true;
                 sceneManager.setScreen(new GameOverScreen(game));
                 sceneManager.backgroundMusic.stop();
+                       
                 /* Only use this for testing 
                 scoreManager.clearScores(); //clear old score for testing fresh start
                 scoreManager.addScore("Player1", finalScore);
