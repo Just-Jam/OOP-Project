@@ -23,17 +23,17 @@ public class Tetris extends Game {
     // Sets the game board size by number
     public final int GRID_COLUMNS = 10; //even number
     public final int GRID_ROWS  = 16;
+    // Extra columns for next blocks
+    public final int EXTRA_COLUMNS = 4;
+    public final int TOTAL_COLUMNS =  GRID_COLUMNS + EXTRA_COLUMNS;
 
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
         soundManager = new SoundManager();
 
-        // Viewports
-        int gameWidth = GRID_COLUMNS;     //10 columns for gameplay
-        int gameHeight = GRID_ROWS;         //16 rows
-        int previewWidth = 4;                    // extra 4 columns for preview
-        viewportManager = new ViewportManager(gameWidth, gameHeight, previewWidth);
+        // Viewport
+        viewportManager = new ViewportManager(TOTAL_COLUMNS, GRID_ROWS);
 
         // Scale font based on viewport height
         font.setUseIntegerPositions(false);
@@ -58,3 +58,4 @@ public class Tetris extends Game {
 
     }
 }
+
