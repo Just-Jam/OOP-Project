@@ -1,45 +1,37 @@
 package io.github.inf1009.manager;
 
-import java.util.List;
+import io.github.inf1009.event.EventManager;
+import io.github.inf1009.event.GameEvent;
+import io.github.inf1009.event.iEventListener;
 
-import io.github.inf1009.BlockShape;
-import io.github.inf1009.Grid;
-import io.github.inf1009.ScoreEntry;
+public class GameStateManager implements iEventListener {
+    private float gameSpeed = 0.4f; //lower = faster
+    private float timer = 0;
 
-public class GameStateManager {
-    public enum GameState {
-        MENU,
-        PAUSED,
-        NORMAL,
-        GAMEOVER
+    public GameStateManager() {
+        EventManager.getInstance().addListener(this);
     }
 
-    private boolean scoreSaved = false;
-    private Grid grid;
-    private float gameSpeed; //lower = faster
-    private float timer;
-    private GameState gameState;
-    private SoundManager soundManager;
-
-    public GameStateManager(SoundManager soundManager) {
-    	this.soundManager = soundManager;
-        gameState = GameState.NORMAL;
-    }
-
-
-    public void checkIllegalMove(BlockShape block, Grid grid) {
-    	this.grid = grid; // Store it for use in isGameOver
-    	if (grid.isOccupied(block.getGridX(), block.getGridY())) {
-            gameState = GameState.GAMEOVER;
-            soundManager.playGameOverSound();
+    @Override
+    public void onEvent(GameEvent event) {
+        if (event.type == GameEvent.Type.SCORE_CHECKPOINT_REACHED) {
+            if ((int) event.data > 3000) {
+                gameSpeed = 0.15f;
+            }
+            if ((int) event.data > 2000) {
+                gameSpeed = 0.20f;
+            }
+            if ((int) event.data > 1000) {
+                gameSpeed = 0.25f;
+            }
         }
     }
 
-    public GameState getGameState() {
-        return gameState;
-    }
-
-    public boolean isGameOver(Grid grid) {
-        return gameState == GameState.GAMEOVER;
+    public void update(float delta) {
+        if (timer >= gameSpeed) {
+            EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.GAME_TICKED));
+            timer = 0;
+        }
+        timer += delta;
     }
 }

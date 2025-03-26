@@ -2,6 +2,8 @@ package io.github.inf1009.manager;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import io.github.inf1009.event.EventManager;
+import io.github.inf1009.event.GameEvent;
 
 public class InputManager extends InputAdapter {
     public MovementManager movementManager;
@@ -10,7 +12,7 @@ public class InputManager extends InputAdapter {
         this.movementManager = movementManager;
     }
     public boolean gamepause=false;
-    
+
     public void rotate() {
         movementManager.rotate();
     }
@@ -19,20 +21,20 @@ public class InputManager extends InputAdapter {
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case com.badlogic.gdx.Input.Keys.LEFT:
-                movementManager.moveLeft();
+                EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.LEFT_KEY_PRESSED));
                 break;
             case com.badlogic.gdx.Input.Keys.RIGHT:
-                movementManager.moveRight();
+                EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.RIGHT_KEY_PRESSED));
                 break;
             case com.badlogic.gdx.Input.Keys.DOWN:
-                movementManager.moveDown();
+                EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.DOWN_KEY_PRESSED));
                 break;
             case com.badlogic.gdx.Input.Keys.UP:
-                movementManager.rotate();
+                EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.UP_KEY_PRESSED));
                 break;
             case com.badlogic.gdx.Input.Keys.SPACE:
-            	movementManager.immediateDrop();
-            	break;
+                EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.SPACE_KEY_PRESSED));
+                break;
             case com.badlogic.gdx.Input.Keys.ESCAPE:
             	gamepause=!gamepause;
             	return gamepause;

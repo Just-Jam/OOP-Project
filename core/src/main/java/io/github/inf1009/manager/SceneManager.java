@@ -4,6 +4,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import io.github.inf1009.screen.GameScreen;
+import io.github.inf1009.screen.MainMenuScreen;
 
 public class SceneManager {
     private  Game game;
@@ -20,16 +22,25 @@ public class SceneManager {
             currentScreen.hide();
             currentScreen.dispose();
         }
-        if (backgroundMusic ==null) {
+
+        if (backgroundMusic == null) {
         	menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Normaltune.mp3"));
         	menuMusic.setLooping(true);
         	menuMusic.setVolume(0.03f);
-        	menuMusic.play();
+
             backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Hypetune.mp3"));
         	backgroundMusic.setLooping(true);
         	backgroundMusic.setVolume(0.03f);
         }
+
         currentScreen = newScreen;
+        if (currentScreen instanceof MainMenuScreen) {
+            menuMusic.play();
+        }
+        if (currentScreen instanceof GameScreen) {
+            backgroundMusic.play();
+        }
+
         game.setScreen(currentScreen);
     }
 
