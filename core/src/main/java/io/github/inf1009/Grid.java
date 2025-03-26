@@ -60,6 +60,11 @@ public class Grid {
     public boolean isOccupied(int x, int y) {
         return gridMatrix[x][y] != null || isClearing[x][y];
     }
+    
+    private int calculateComboBonus(int clearedRows) {
+        // For example, award 100 extra points for each additional clear beyond the first.
+        return (clearedRows - 1) * 100;
+    }
 
     /**
      * Draws the grid. Cells marked as clearing are drawn in 50% transparent grey.
@@ -117,6 +122,8 @@ public class Grid {
      * The fire animation is added only for the non recyclable (right) section.
      */
     public void clearRow() {
+    	int clearedRows = 0;
+    	
         for (int row = 0; row < rows; row++) {
             boolean leftSideFull = true;
             boolean rightSideFull = true;
@@ -186,6 +193,10 @@ public class Grid {
                 }, 0.5f);
             }
         }
+        if (clearedRows > 1) {
+            int comboBonus = calculateComboBonus(clearedRows);
+            score += comboBonus;
+        }
     }
     /**
      * Applies gravity to a portion of the grid, pulling blocks down
@@ -205,6 +216,7 @@ public class Grid {
                 }
             }
         }
+        
     }
 
     /**

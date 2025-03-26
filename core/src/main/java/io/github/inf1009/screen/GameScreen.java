@@ -196,6 +196,3 @@ public class GameScreen implements Screen {
         shapeRenderer.dispose();
     }
 }
-
-
-

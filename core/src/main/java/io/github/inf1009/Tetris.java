@@ -58,4 +58,3 @@ public class Tetris extends Game {
 
     }
 }
-
