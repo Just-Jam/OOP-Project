@@ -1,7 +1,5 @@
 package io.github.inf1009.screen;
 
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -15,8 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import io.github.inf1009.*;
-import io.github.inf1009.event.EventManager;
 import io.github.inf1009.manager.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class GameScreen implements Screen {
     private Tetris game;
@@ -25,165 +24,159 @@ public class GameScreen implements Screen {
     private SpriteBatch batch;
     private Grid grid;
     private Texture backgroundTexture;
-    private Texture pausetexture;
     private Texture nextBlockBoard;
+    private Texture scoreBoardTexture;
 
-    private int worldWidth, worldHeight, gameWidth;
-    private String player_name;
-
+    private float gameSpeed;
     private ViewportManager viewportManager;
     private MovementManager movementManager;
     private InputManager inputManager;
     private GameStateManager gameStateManager;
     private EntityManager entityManager;
-    private CharSequence ptest=String.valueOf(0);
-    ScoreManager scoreManager = new ScoreManager();
+    private Stage previewStage;
+    private List<BlockShape> nextBlocks;
+    private String playerName;
+    private ScoreManager scoreManager;
+
+    private float timer;
 
     public GameScreen(final Tetris game, String name) {
-    	player_name=name;
         this.game = game;
+        this.playerName = name;
         this.sceneManager = game.sceneManager;
         this.shapeRenderer = new ShapeRenderer();
         this.batch = game.batch;
+        this.viewportManager = game.viewportManager;
+        this.scoreManager = new ScoreManager();
 
-        worldWidth = game.TOTAL_COLUMNS;
-        worldHeight = game.GRID_ROWS;
-        gameWidth = game.GRID_COLUMNS;
+        int worldWidth = game.TOTAL_COLUMNS;
+        int worldHeight = game.GRID_ROWS;
+        int gameWidth = game.GRID_COLUMNS;
 
-        backgroundTexture = new Texture("game_background.jpg");
-        pausetexture= new Texture("game_pause.png");
-        nextBlockBoard = new Texture("next_block_board.png");
+        this.scoreBoardTexture = new Texture("ScoreBoard.png");
+        this.backgroundTexture = new Texture("screen/GameScreen.png");
+        this.nextBlockBoard = new Texture("next_block_board.png");
 
-        grid = new Grid(gameWidth, worldHeight, game.getSoundManager());
-        entityManager = new EntityManager(grid);
-        entityManager.spawnNewBlock();
+        this.grid = new Grid(gameWidth, worldHeight, game.getSoundManager());
+        this.entityManager = new EntityManager(grid);
+        this.nextBlocks = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            nextBlocks.add(BlockFactory.createRandomBlock(gameWidth, worldHeight));
+        }
+        this.entityManager.spawnNewBlock(nextBlocks.remove(0));
+        nextBlocks.add(BlockFactory.createRandomBlock(gameWidth, worldHeight));
 
-        viewportManager = game.viewportManager;
-        movementManager = new MovementManager(grid, game.getSoundManager());
-        inputManager = new InputManager(movementManager);
+        this.movementManager = new MovementManager(entityManager.getCurrentBlock(), grid, game.getSoundManager());
+        this.inputManager = new InputManager(movementManager);
         Gdx.input.setInputProcessor(inputManager);
 
-        gameStateManager = new GameStateManager();
-        Gdx.input.setInputProcessor(inputManager);
+        this.gameStateManager = new GameStateManager(game.getSoundManager());
+        this.previewStage = new Stage(new ScreenViewport());
+
+        this.gameSpeed = 0.3f;
+        this.timer = 0f;
     }
 
     @Override
-    public void show() {}
-
-    @Override
     public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        ScreenUtils.clear(Color.NAVY);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         viewportManager.draw();
-        entityManager.update();
 
+        if (inputManager.isGamePaused()) {
+            inputManager.resetPauseFlag();
+            gameStateManager.pauseGame();
+            sceneManager.pushScreen(new PauseScreen(game, this, inputManager));
+            return;
+        }
 
-        if (inputManager.gamepause) {
-    		pause();
-    	}
-    	else {
-    		resume();
-    		draw();
-            gameStateManager.update(delta);
-    	}
+        updateGameSpeed();
+        updateLogic(delta);
 
+        if (gameStateManager.isGameOver()) {
+            int finalScore = grid.getPlayerScore();
+            sceneManager.setScreen(new GameOverScreen(game, playerName, finalScore));
+            sceneManager.backgroundMusic.stop();
+            return;
+        }
+
+        draw();
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
-    private void handleGameOver() {
-        	//Initialize the boolean flag to allow this code to be printed just once
-        	boolean scoresPrinted = false;
 
-        	if (!scoresPrinted) {
-                int finalScore = grid.getPlayerScore(); //Get latest visible score
-                //For debugging the output
-                //System.out.println("DEBUG: Final Score at Game Over = " + finalScore);
+    private void updateGameSpeed() {
+        int score = grid.getPlayerScore();
+        if (score > 3000) gameSpeed = 0.15f;
+        else if (score > 2000) gameSpeed = 0.2f;
+        else if (score > 1000) gameSpeed = 0.25f;
+        else gameSpeed = 0.3f;
+    }
 
-                //Adding score to database (Name, score)
-                scoreManager.addScore(player_name, finalScore);
-
-                List<ScoreEntry> topScores = scoreManager.getHighScores();
-                for (int i = 0; i < topScores.size(); i++) {
-                    ScoreEntry entry = topScores.get(i);
-                    //Change this to print method in game screen to print on screen
-                    System.out.println((i + 1) + ". " + entry.name + " - " + entry.score);
-                }
-                //boolean flag to stop the code above from looping
-                scoresPrinted = true;
-                sceneManager.setScreen(new GameOverScreen(game,player_name));
-                sceneManager.backgroundMusic.stop();
-
-                /* Only use this for testing
-                scoreManager.clearScores(); //clear old score for testing fresh start
-                scoreManager.addScore("Player1", finalScore);
-                */
-            }
+    private void updateLogic(float delta) {
+        timer += delta;
+        if (timer >= gameSpeed) {
+            entityManager.getCurrentBlock().fall(grid);
+            timer = 0;
+        }
+        entityManager.update(movementManager, nextBlocks);
+        gameStateManager.checkIllegalMove(entityManager.getCurrentBlock(), grid);
     }
 
     private void draw() {
-        ScreenUtils.clear(Color.NAVY);
+        int worldWidth = game.TOTAL_COLUMNS;
+        int worldHeight = game.GRID_ROWS;
+        int gameWidth = game.GRID_COLUMNS;
 
         batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, gameWidth, worldHeight);
+        batch.draw(scoreBoardTexture, game.GRID_COLUMNS, 14, 4, 2);
         batch.draw(nextBlockBoard, game.GRID_COLUMNS, 6, 4, 8);
-        game.font.draw(game.batch, ptest , (worldWidth-1.88f), (worldHeight-0.7f));
+        game.font.draw(batch, String.valueOf(grid.getPlayerScore()), worldWidth - 2.4f, worldHeight - 0.77f);
         batch.end();
 
-        // Draw the grid and current block
         grid.draw(shapeRenderer, viewportManager.getFitViewport());
         entityManager.draw(shapeRenderer, batch);
-
-        ptest=String.valueOf(grid.getPlayerScore());
-        // Draw next blocks preview
         drawNextBlocksPreview();
     }
-
 
     private void drawNextBlocksPreview() {
         shapeRenderer.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
 
-        float previewX = gameWidth + 1.4f;
-        float previewY = worldHeight - 4.3f;
+        float previewX = game.GRID_COLUMNS + 1.4f;
+        float previewY = game.GRID_ROWS - 4.3f;
 
         batch.begin();
-        for (int i = 0; i < entityManager.getNextBlocks().size(); i++) {
-            BlockShape previewBlock = entityManager.getNextBlocks().get(i);
-            float currentOffsetY = previewY - i * 2f; // vertical spacing
+        for (int i = 0; i < nextBlocks.size(); i++) {
+            BlockShape previewBlock = nextBlocks.get(i);
+            float currentOffsetY = previewY - i * 2f;
             previewBlock.drawNextBlocks(batch, previewX, currentOffsetY);
         }
         batch.end();
-        ptest=String.valueOf(grid.getPlayerScore());
     }
-
 
     @Override
     public void resize(int width, int height) {
         viewportManager.resize(width, height);
     }
 
-    @Override
-    public void hide() {}
-
-    @Override
-    public void pause() {
-    	sceneManager.backgroundMusic.pause();
-
-        ScreenUtils.clear(Color.BLACK);
-        batch.begin();
-        batch.draw(pausetexture, 0, 0, gameWidth, worldHeight);
-        batch.end();
+    @Override public void show() {
+        Gdx.input.setInputProcessor(inputManager);
+        sceneManager.backgroundMusic.play();
+        gameStateManager.resumeGame();
     }
-
-    @Override
-    public void resume() {
-    	sceneManager.backgroundMusic.play();
+    @Override public void hide() {}
+    @Override public void pause() {}
+    @Override public void resume() {
+        gameStateManager.resumeGame();
     }
 
     @Override
     public void dispose() {
         backgroundTexture.dispose();
+        scoreBoardTexture.dispose();
         shapeRenderer.dispose();
     }
 }

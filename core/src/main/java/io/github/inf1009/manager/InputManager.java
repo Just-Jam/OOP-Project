@@ -2,50 +2,52 @@ package io.github.inf1009.manager;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import io.github.inf1009.event.EventManager;
-import io.github.inf1009.event.GameEvent;
 
 public class InputManager extends InputAdapter {
-    public MovementManager movementManager;
+    private final MovementManager movementManager;
+    private boolean gamePaused = false;
 
     public InputManager(MovementManager movementManager) {
         this.movementManager = movementManager;
     }
-    public boolean gamepause=false;
 
-    public void rotate() {
-        movementManager.rotate();
+    public boolean isGamePaused() {
+        return gamePaused;
+    }
+
+    public void resetPauseFlag() {
+        gamePaused = false;
     }
 
     @Override
     public boolean keyDown(int keycode) {
         switch (keycode) {
-            case com.badlogic.gdx.Input.Keys.LEFT:
-                EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.LEFT_KEY_PRESSED));
+            case Input.Keys.LEFT:
+                movementManager.moveLeft();
                 break;
-            case com.badlogic.gdx.Input.Keys.RIGHT:
-                EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.RIGHT_KEY_PRESSED));
+            case Input.Keys.RIGHT:
+                movementManager.moveRight();
                 break;
-            case com.badlogic.gdx.Input.Keys.DOWN:
-                EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.DOWN_KEY_PRESSED));
+            case Input.Keys.DOWN:
+                movementManager.moveDown();
                 break;
-            case com.badlogic.gdx.Input.Keys.UP:
-                EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.UP_KEY_PRESSED));
+            case Input.Keys.UP:
+                movementManager.rotate();
                 break;
-            case com.badlogic.gdx.Input.Keys.SPACE:
-                EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.SPACE_KEY_PRESSED));
+            case Input.Keys.SPACE:
+                movementManager.immediateDrop();
                 break;
-            case com.badlogic.gdx.Input.Keys.ESCAPE:
-            	gamepause=!gamepause;
-            	return gamepause;
-       }
+            case Input.Keys.ESCAPE:
+                gamePaused = true;
+                return true; // return true to signal pause handled
+        }
         return true;
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        // For debugging or mobile
         System.out.println("Touch at: " + screenX + ", " + screenY);
-        return false;  // Return false so UI elements can also receive input
+        return false;
     }
 }
-

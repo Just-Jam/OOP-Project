@@ -14,11 +14,11 @@ public class SoundManager {
 
     public SoundManager() {
         // Load the sound effects from the assets folder
-        rotateSound = Gdx.audio.newSound(Gdx.files.internal("rotating.mp3"));
-        placeBlockSound = Gdx.audio.newSound(Gdx.files.internal("place.mp3"));
-        gameOverSound = Gdx.audio.newSound(Gdx.files.internal("game_over.mp3"));
-        crushSound = Gdx.audio.newSound(Gdx.files.internal("crush.mp3"));
-        burningSound = Gdx.audio.newSound(Gdx.files.internal("burning.mp3"));
+        rotateSound = Gdx.audio.newSound(Gdx.files.internal("audio/rotating.mp3"));
+        placeBlockSound = Gdx.audio.newSound(Gdx.files.internal("audio/place.mp3"));
+        gameOverSound = Gdx.audio.newSound(Gdx.files.internal("audio/game_over.mp3"));
+        crushSound = Gdx.audio.newSound(Gdx.files.internal("audio/crush.mp3"));
+        burningSound = Gdx.audio.newSound(Gdx.files.internal("audio/burning.mp3"));
     }
 
     // Method to play the rotation sound

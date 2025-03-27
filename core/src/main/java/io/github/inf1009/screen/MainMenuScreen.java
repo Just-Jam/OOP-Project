@@ -5,67 +5,85 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
 import io.github.inf1009.Tetris;
 import io.github.inf1009.TextureButton;
 import io.github.inf1009.manager.SceneManager;
 import io.github.inf1009.manager.ViewportManager;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class MainMenuScreen implements Screen {
 
+    private static final float BUTTON_WIDTH = 4f;
+    private static final float BUTTON_HEIGHT = 1f;
+    private static final float PLAY_Y = 7f;
+    private static final float CREDITS_Y = 5.5f;
+    private static final float HOW_TO_PLAY_Y = 4f;
+
     private final Tetris game;
     private final SceneManager sceneManager;
-    private Texture backgroundTexture;
-    private Stage stage;
+    private final ViewportManager viewportManager;
 
-    private int worldWidth, worldHeight, gameWidth;
-    private TextureButton playButton;
-    private TextureButton creditButton;
-    private TextField nameField;
+    private final int worldWidth;
+    private final int worldHeight;
 
-    private ViewportManager viewportManager;
+    private final Texture backgroundTexture;
+    private final Stage stage;
+
+    private final TextureButton playButton;
+    private final TextureButton creditButton;
+    private final TextureButton howToPlayButton;
+    
+    TextField nameField;
+    private String playerName;
 
     public MainMenuScreen(final Tetris game) {
         this.game = game;
         this.sceneManager = game.sceneManager;
-        viewportManager = game.viewportManager;
+        this.viewportManager = game.viewportManager;
 
-        backgroundTexture = new Texture("title_art.png");
-        stage = new Stage(viewportManager.getFitViewport());
+        this.worldWidth = game.GRID_COLUMNS;
+        this.worldHeight = game.GRID_ROWS;
+
+        this.backgroundTexture = new Texture("screen/title_art.png");
+        this.stage = new Stage(viewportManager.getFitViewport());
         Gdx.input.setInputProcessor(stage);
+      
+        this.playButton = createButton("buttons/play_button.png", PLAY_Y, () ->    
+        sceneManager.setScreen(new GameScreen(game, (playerName = nameField.getText().trim())))
+        );
 
-        worldWidth = game.GRID_COLUMNS;
-        worldHeight = game.GRID_ROWS;
-        gameWidth = game.GRID_COLUMNS;
+        this.creditButton = createButton("buttons/credits_button.png", CREDITS_Y, () ->
+            sceneManager.setScreen(new CreditsScreen(game))
+        );
 
-        // Create the Play button
-        playButton = new TextureButton("buttons/play_button.png", 4, 1, (float) worldWidth / 2, 6.5f, new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                String playerName = nameField.getText().trim();
-                System.out.println("Player name: " + playerName);
-                sceneManager.setScreen(new GameScreen(game, playerName));
-                sceneManager.backgroundMusic.play();
-                sceneManager.menuMusic.stop();
-            }
-        });
+        this.howToPlayButton = createButton("buttons/howtoplay_button.png", HOW_TO_PLAY_Y, () ->
+            sceneManager.setScreen(new InstructionScreen(game))
+        );
+        nametext();
+
         stage.addActor(playButton.getButton());
+        stage.addActor(creditButton.getButton());
+        stage.addActor(howToPlayButton.getButton());
+    }
 
-        // Create the Credit button positioned right below the Play button
-        creditButton = new TextureButton("buttons/credits_button.png", 4, 1, (float) worldWidth / 2, 5.5f, new ClickListener() {
+    private TextureButton createButton(String texturePath, float y, Runnable onClick) {
+        float centerX = worldWidth / 2f;
+
+        return new TextureButton(texturePath, BUTTON_WIDTH, BUTTON_HEIGHT, centerX, y, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                sceneManager.setScreen(new CreditsScreen(game));
+                onClick.run();
+                sceneManager.menuMusic.stop();
+                sceneManager.backgroundMusic.play();
             }
         });
-        stage.addActor(creditButton.getButton());
-
+    }
+    private void nametext(){
         //Create the Name field text box thing below credit
 
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
@@ -75,36 +93,32 @@ public class MainMenuScreen implements Screen {
         nameField = new TextField("", style);  // custom style with smaller font
         nameField.setMessageText("Enter your name");
         nameField.setSize(4f, 0.5f);
-        nameField.setPosition(3.8f, 4.5f);
+        nameField.setPosition(3.8f, 6f);
         stage.addActor(nameField);
-
+        
     }
+ 
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(Color.BLACK);
 
         viewportManager.draw();
-
         game.batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
+
         game.batch.begin();
         game.batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
         game.batch.end();
 
-        stage.act(Gdx.graphics.getDeltaTime());
+        stage.act(delta);
         stage.draw();
 
-        // Example of handling key input for sound control
+        // Debug music controls
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             sceneManager.menuMusic.play();
-        }
-        else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             sceneManager.menuMusic.stop();
         }
-    }
-
-    @Override public void show() {
-
     }
 
     @Override
@@ -113,20 +127,17 @@ public class MainMenuScreen implements Screen {
         stage.getViewport().update(width, height, true);
     }
 
-    @Override public void pause() {
+    @Override public void show() {}
+    @Override public void hide() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
 
-    }
-
-    @Override public void resume() {
-
-    }
-
-    @Override public void hide() {
-
-    }
-
-    @Override public void dispose() {
+    @Override
+    public void dispose() {
         stage.dispose();
         backgroundTexture.dispose();
+        playButton.dispose();
+        creditButton.dispose();
+        howToPlayButton.dispose();
     }
 }

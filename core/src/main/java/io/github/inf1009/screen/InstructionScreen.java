@@ -5,51 +5,57 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+
 import io.github.inf1009.Tetris;
 import io.github.inf1009.TextureButton;
 import io.github.inf1009.manager.SceneManager;
 import io.github.inf1009.manager.ViewportManager;
 
 public class InstructionScreen implements Screen {
+    private static final float BUTTON_WIDTH = 4f;
+    private static final float BUTTON_HEIGHT = 1f;
+    private static final float BUTTON_Y = 1.5f;
 
     private final Tetris game;
     private final SceneManager sceneManager;
     private final ViewportManager viewportManager;
+
     private final Stage stage;
     private final Texture backgroundTexture;
     private final TextureButton homepageButton;
 
-    private int worldWidth, worldHeight;
+    private final int worldWidth;
+    private final int worldHeight;
 
     public InstructionScreen(final Tetris game) {
         this.game = game;
         this.sceneManager = game.sceneManager;
         this.viewportManager = game.viewportManager;
 
-        worldWidth = game.GRID_COLUMNS;
-        worldHeight = game.GRID_ROWS;
+        this.worldWidth = game.GRID_COLUMNS;
+        this.worldHeight = game.GRID_ROWS;
 
-        stage = new Stage(viewportManager.getFitViewport());
+        this.stage = new Stage(viewportManager.getFitViewport());
         Gdx.input.setInputProcessor(stage);
 
-        backgroundTexture = new Texture("InstructionsScreen.jpg");
-
-        // Homepage button placed neatly at the bottom-center
-        homepageButton = new TextureButton(
-            "buttons/homepage_button.png", 
-            4, 1, 
-            worldWidth / 2f, 1.5f, 
-            new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    sceneManager.setScreen(new MainMenuScreen(game));
-                }
-            }
-        );
+        this.backgroundTexture = new Texture("screen/InstructionsScreen.jpg");
+        this.homepageButton = createHomepageButton();
         stage.addActor(homepageButton.getButton());
+    }
+
+    private TextureButton createHomepageButton() {
+        float centerX = worldWidth / 2f;
+
+        return new TextureButton("buttons/homepage_button.png", BUTTON_WIDTH, BUTTON_HEIGHT,
+                centerX, BUTTON_Y, new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        sceneManager.setScreen(new MainMenuScreen(game));
+                    }
+                });
     }
 
     @Override
@@ -82,5 +88,6 @@ public class InstructionScreen implements Screen {
     public void dispose() {
         stage.dispose();
         backgroundTexture.dispose();
+        homepageButton.dispose();
     }
 }

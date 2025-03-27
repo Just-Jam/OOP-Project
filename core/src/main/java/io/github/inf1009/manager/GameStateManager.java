@@ -1,37 +1,62 @@
 package io.github.inf1009.manager;
 
-import io.github.inf1009.event.EventManager;
-import io.github.inf1009.event.GameEvent;
-import io.github.inf1009.event.iEventListener;
+import io.github.inf1009.BlockShape;
+import io.github.inf1009.Grid;
 
-public class GameStateManager implements iEventListener {
-    private float gameSpeed = 0.4f; //lower = faster
-    private float timer = 0;
-
-    public GameStateManager() {
-        EventManager.getInstance().addListener(this);
+public class GameStateManager {
+    public enum GameState {
+        MENU,
+        PAUSED,
+        NORMAL,
+        GAMEOVER
     }
 
-    @Override
-    public void onEvent(GameEvent event) {
-        if (event.type == GameEvent.Type.SCORE_CHECKPOINT_REACHED) {
-            if ((int) event.data > 3000) {
-                gameSpeed = 0.15f;
-            }
-            if ((int) event.data > 2000) {
-                gameSpeed = 0.20f;
-            }
-            if ((int) event.data > 1000) {
-                gameSpeed = 0.25f;
-            }
+    private GameState gameState;
+    private final SoundManager soundManager;
+
+    public GameStateManager(SoundManager soundManager) {
+        this.soundManager = soundManager;
+        this.gameState = GameState.NORMAL;
+    }
+
+    public void checkIllegalMove(BlockShape block, Grid grid) {
+        if (grid.isOccupied(block.getGridX(), block.getGridY())) {
+            triggerGameOver();
         }
     }
 
-    public void update(float delta) {
-        if (timer >= gameSpeed) {
-            EventManager.getInstance().postEvent(new GameEvent(GameEvent.Type.GAME_TICKED));
-            timer = 0;
+    public void triggerGameOver() {
+        if (gameState != GameState.GAMEOVER) {
+            gameState = GameState.GAMEOVER;
+            soundManager.playGameOverSound();
         }
-        timer += delta;
+    }
+
+    public void pauseGame() {
+        if (gameState == GameState.NORMAL) {
+            gameState = GameState.PAUSED;
+        }
+    }
+
+    public void resumeGame() {
+        if (gameState == GameState.PAUSED) {
+            gameState = GameState.NORMAL;
+        }
+    }
+
+    public boolean isGameOver() {
+        return gameState == GameState.GAMEOVER;
+    }
+
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public boolean isPaused() {
+        return gameState == GameState.PAUSED;
+    }
+
+    public boolean isNormal() {
+        return gameState == GameState.NORMAL;
     }
 }

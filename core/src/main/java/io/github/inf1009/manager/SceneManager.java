@@ -4,43 +4,58 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import io.github.inf1009.screen.GameScreen;
-import io.github.inf1009.screen.MainMenuScreen;
+//import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import java.util.Stack;
 
 public class SceneManager {
     private  Game game;
     private Screen currentScreen;
     public Music backgroundMusic;
     public Music menuMusic;
+    private Stack<Screen> screenStack = new Stack<>();
 
     public SceneManager(Game game) {
         this.game = game;
+        
+     // Load background and menu music
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/HypeTune.mp3"));
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/NormalTune.mp3"));
+
+        backgroundMusic.setLooping(true);
+        menuMusic.setLooping(true);
     }
 
+    // Push a new screen on top without disposing the current one
+    public void pushScreen(Screen newScreen) {
+        if (currentScreen != null) {
+            screenStack.push(currentScreen);
+        }
+        currentScreen = newScreen;
+        game.setScreen(currentScreen);
+    }
+
+    // Pop the current screen and resume the previous one
+    public void popScreen() {
+        if (!screenStack.isEmpty()) {
+            currentScreen.hide();
+            currentScreen.dispose();
+            currentScreen = screenStack.pop();
+            game.setScreen(currentScreen);
+        }
+    }
+
+    // Use this method for transitions that require replacing everything
     public void setScreen(Screen newScreen) {
+        while (!screenStack.isEmpty()) {
+            Screen s = screenStack.pop();
+            s.hide();
+            s.dispose();
+        }
         if (currentScreen != null) {
             currentScreen.hide();
             currentScreen.dispose();
         }
-
-        if (backgroundMusic == null) {
-        	menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Normaltune.mp3"));
-        	menuMusic.setLooping(true);
-        	menuMusic.setVolume(0.03f);
-
-            backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Hypetune.mp3"));
-        	backgroundMusic.setLooping(true);
-        	backgroundMusic.setVolume(0.03f);
-        }
-
         currentScreen = newScreen;
-        if (currentScreen instanceof MainMenuScreen) {
-            menuMusic.play();
-        }
-        if (currentScreen instanceof GameScreen) {
-            backgroundMusic.play();
-        }
-
         game.setScreen(currentScreen);
     }
 
@@ -48,7 +63,5 @@ public class SceneManager {
         if (currentScreen != null) {
             currentScreen.dispose();
         }
-        backgroundMusic.dispose();
-        menuMusic.dispose();
     }
 }
