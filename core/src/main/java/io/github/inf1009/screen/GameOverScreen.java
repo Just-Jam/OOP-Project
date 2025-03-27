@@ -94,7 +94,7 @@ public class GameOverScreen implements Screen {
 
         game.batch.setProjectionMatrix(viewportManager.getFitViewport().getCamera().combined);
         game.batch.begin();
-        game.batch.draw(backgroundTexture, 0, 0, gameWidth, worldHeight);
+        game.batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
 
         game.font.draw(game.batch, "Your Score: " + finalScore, LEADERBOARD_X-1, LEADERBOARD_Y+0.4f);
 
