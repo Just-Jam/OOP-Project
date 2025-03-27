@@ -50,7 +50,7 @@ public class PauseScreen implements Screen {
     }
 
     private TextureButton createBackButton() {
-        float centerX = game.GRID_COLUMNS / 2f;
+        float centerX = game.TOTAL_COLUMNS / 2f;
 
         return new TextureButton("buttons/back_button.png", BUTTON_WIDTH, BUTTON_HEIGHT, centerX, BACK_Y,
                 new ClickListener() {
@@ -63,7 +63,7 @@ public class PauseScreen implements Screen {
     }
 
     private TextureButton createQuitButton() {
-        float centerX = game.GRID_COLUMNS / 2f;
+        float centerX = game.TOTAL_COLUMNS / 2f;
 
         return new TextureButton("buttons/quit_button.png", BUTTON_WIDTH, BUTTON_HEIGHT, centerX, QUIT_Y,
                 new ClickListener() {
@@ -80,7 +80,7 @@ public class PauseScreen implements Screen {
 
         game.batch.setProjectionMatrix(game.viewportManager.getFitViewport().getCamera().combined);
         game.batch.begin();
-        game.batch.draw(backgroundTexture, 0, 0, game.GRID_COLUMNS, game.GRID_ROWS);
+        game.batch.draw(backgroundTexture, 0, 0, game.TOTAL_COLUMNS, game.GRID_ROWS);
         game.batch.end();
 
         stage.act(delta);
