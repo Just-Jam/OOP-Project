@@ -46,7 +46,7 @@ public class MainMenuScreen implements Screen {
         this.sceneManager = game.sceneManager;
         this.viewportManager = game.viewportManager;
 
-        this.worldWidth = game.GRID_COLUMNS;
+        this.worldWidth = game.TOTAL_COLUMNS;
         this.worldHeight = game.GRID_ROWS;
 
         this.backgroundTexture = new Texture("screen/title_art.png");
