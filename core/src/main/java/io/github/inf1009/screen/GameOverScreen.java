@@ -16,9 +16,6 @@ import io.github.inf1009.manager.*;
 import java.util.List;
 
 public class GameOverScreen implements Screen {
-    private static final float LEADERBOARD_X = 5f;
-    private static final float LEADERBOARD_Y = 8.7f;
-
     private final Tetris game;
     private final SceneManager sceneManager;
     private final ViewportManager viewportManager;
@@ -38,6 +35,9 @@ public class GameOverScreen implements Screen {
 
     private final List<ScoreEntry> topScores;
 
+    private float LEADERBOARD_X; // = 5f;
+    private float LEADERBOARD_Y; // = 8.7f;
+    
     public GameOverScreen(final Tetris game, String playerName, int finalScore) {
         this.game = game;
         this.sceneManager = game.sceneManager;
@@ -49,7 +49,9 @@ public class GameOverScreen implements Screen {
         this.worldWidth = game.TOTAL_COLUMNS;
         this.gameWidth = game.GRID_COLUMNS;
         this.worldHeight = game.GRID_ROWS;
-
+        LEADERBOARD_X = (worldWidth/2)+1;
+        LEADERBOARD_Y = (worldHeight/2)+0.7f;
+        
         this.backgroundTexture = new Texture("screen/game_over.png");
         this.stage = new Stage(viewportManager.getFitViewport());
         Gdx.input.setInputProcessor(stage);
@@ -67,7 +69,7 @@ public class GameOverScreen implements Screen {
 
     private TextureButton createNewGameButton() {
         return new TextureButton("buttons/new_game_button.png", 4, 1,
-                (float) gameWidth / 2, 6, new ClickListener() {
+                (float) worldWidth / 2, 6, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 sceneManager.setScreen(new GameScreen(game, playerName));
@@ -79,7 +81,7 @@ public class GameOverScreen implements Screen {
 
     private TextureButton createQuitButton() {
         return new TextureButton("buttons/quit_button.png", 4, 1,
-                (float) gameWidth / 2, 5, new ClickListener() {
+                (float) worldWidth / 2, 5, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit();
@@ -96,7 +98,7 @@ public class GameOverScreen implements Screen {
         game.batch.begin();
         game.batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
 
-        game.font.draw(game.batch, "Your Score: " + finalScore, LEADERBOARD_X-1, LEADERBOARD_Y+0.4f);
+        game.font.draw(game.batch, "Your Score: " + finalScore, LEADERBOARD_X-1.85f, LEADERBOARD_Y+0.4f);
 
         drawLeaderboard();
         game.batch.end();
