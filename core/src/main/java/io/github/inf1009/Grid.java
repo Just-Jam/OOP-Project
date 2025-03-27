@@ -244,19 +244,26 @@ public class Grid {
     }
 
     private void applyGravityToSection(int startCol, int endCol) {
-        for (int col = startCol; col < endCol; col++) {
-            int writeRow = 0;
-            for (int readRow = 0; readRow < rows; readRow++) {
-                if (gridMatrix[col][readRow] != null) {
-                    if (writeRow != readRow) {
-                        gridMatrix[col][writeRow] = gridMatrix[col][readRow];
-                        gridMatrix[col][readRow] = null;
+        // Delay gravity by 0.7 seconds (adjust as needed)
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                for (int col = startCol; col < endCol; col++) {
+                    int writeRow = 0;
+                    for (int readRow = 0; readRow < rows; readRow++) {
+                        if (gridMatrix[col][readRow] != null) {
+                            if (writeRow != readRow) {
+                                gridMatrix[col][writeRow] = gridMatrix[col][readRow];
+                                gridMatrix[col][readRow] = null;
+                            }
+                            writeRow++;
+                        }
                     }
-                    writeRow++;
                 }
             }
-        }
+        }, 0.7f);
     }
+
 
     private void updateFireAnimations(float delta) {
         for (int i = fireAnimations.size - 1; i >= 0; i--) {
