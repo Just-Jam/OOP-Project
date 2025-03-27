@@ -38,6 +38,7 @@ public class MainMenuScreen implements Screen {
     private final TextureButton creditButton;
     private final TextureButton howToPlayButton;
     
+    float centerX;
     TextField nameField;
     private String playerName;
 
@@ -48,7 +49,7 @@ public class MainMenuScreen implements Screen {
 
         this.worldWidth = game.GRID_COLUMNS;
         this.worldHeight = game.GRID_ROWS;
-
+        centerX = worldWidth / 2f;
         this.backgroundTexture = new Texture("screen/title_art.png");
         this.stage = new Stage(viewportManager.getFitViewport());
         Gdx.input.setInputProcessor(stage);
@@ -72,7 +73,7 @@ public class MainMenuScreen implements Screen {
     }
 
     private TextureButton createButton(String texturePath, float y, Runnable onClick) {
-        float centerX = worldWidth / 2f;
+        
 
         return new TextureButton(texturePath, BUTTON_WIDTH, BUTTON_HEIGHT, centerX, y, new ClickListener() {
             @Override
@@ -93,7 +94,7 @@ public class MainMenuScreen implements Screen {
         nameField = new TextField("", style);  // custom style with smaller font
         nameField.setMessageText("Enter your name");
         nameField.setSize(4f, 0.5f);
-        nameField.setPosition(3.8f, 6f);
+        nameField.setPosition(centerX-1, 6f);
         stage.addActor(nameField);
         
     }
