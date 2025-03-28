@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -178,5 +179,8 @@ public class GameScreen implements Screen {
         backgroundTexture.dispose();
         scoreBoardTexture.dispose();
         shapeRenderer.dispose();
+        nextBlockBoard.dispose();
+        if (grid instanceof Disposable)
+        	((Disposable) grid).dispose();
     }
 }
