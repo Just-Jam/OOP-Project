@@ -53,6 +53,7 @@ public class MainMenuScreen implements Screen {
         this.backgroundTexture = new Texture("screen/title_art.png");
         this.stage = new Stage(viewportManager.getFitViewport());
         Gdx.input.setInputProcessor(stage);
+        sceneManager.menuMusic.play();
       
         this.playButton = createButton("buttons/play_button.png", PLAY_Y, () ->    
         sceneManager.setScreen(new GameScreen(game, (playerName = nameField.getText().trim())))
@@ -79,8 +80,11 @@ public class MainMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 onClick.run();
-                sceneManager.menuMusic.stop();
-                sceneManager.backgroundMusic.play();
+                if(texturePath=="buttons/play_button.png") {
+                	sceneManager.menuMusic.stop();
+                    sceneManager.backgroundMusic.play();
+                }
+                
             }
         });
     }
